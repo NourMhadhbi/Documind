@@ -1,0 +1,7 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/mhadhbinouur/documind.s3
+    access_key_id = 4b12205371bdda67fecdf12c25f4a47888bbd213
+    secret_access_key = 4b12205371bdda67fecdf12c25f4a47888bbd213
