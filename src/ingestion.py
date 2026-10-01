@@ -118,9 +118,9 @@ def build_chunks(documents:List[Dict],chunk_size:int,chunk_overlap:int,keep_code
     return chunks
 
 if __name__=="__main__":
-    CHUNK_SIZE = 500
-    CHUNK_OVERLAP = 50
-    KEEP_CODE_BLOCKS = False
+    CHUNK_SIZE = 800
+    CHUNK_OVERLAP = 100
+    KEEP_CODE_BLOCKS = True
     docs=load_markdown_files("data/raw")
     print(f"Documents chargés: {len (docs)}")
 
