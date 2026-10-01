@@ -1,0 +1,71 @@
+# ==== Secrets / variables d'environnement ====
+.env
+*.env
+!.env.example
+
+# ==== Python ====
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+build/
+dist/
+
+# ==== Environnements virtuels ====
+venv/
+env/
+.venv/
+ENV/
+
+# ==== Jupyter ====
+.ipynb_checkpoints/
+
+# ==== DVC ====
+# Les données brutes/traitées sont versionnées par DVC, pas par Git.
+# DVC génère automatiquement les .gitignore locaux dans chaque dossier
+# suivi (ex: data/raw/.gitignore) — on ne les force pas ici, mais on
+# s'assure que les gros fichiers ne sont jamais commités par erreur.
+/data/raw/*
+!/data/raw/.gitkeep
+/data/processed/*
+!/data/processed/.gitkeep
+/data/index/*
+!/data/index/.gitkeep
+.dvc/cache/
+.dvc/tmp/
+
+# ==== Modèles / artefacts volumineux ====
+*.pkl
+*.joblib
+*.bin
+*.pt
+*.onnx
+models/*
+!models/.gitkeep
+
+# ==== MLflow (si run local, sinon géré par DagsHub) ====
+mlruns/
+mlartifacts/
+
+# ==== Docker ====
+*.log
+
+# ==== IDE ====
+.vscode/
+.idea/
+*.swp
+
+# ==== OS ====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==== Tests / coverage ====
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==== Divers ====
+*.tmp
