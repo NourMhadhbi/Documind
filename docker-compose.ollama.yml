@@ -1,0 +1,26 @@
+# Ollama dédié à DocuMind, INDÉPENDANT du projet HM-Retail (shop-ollama).
+# Même image locale (ollama/ollama), mais conteneur, port et volume distincts.
+#
+#   docker compose -f docker-compose.ollama.yml up -d
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    # Utilise uniquement l'image déjà présente sur le disque : si elle était
+    # absente, Docker échouerait au lieu de télécharger 4,76 Go en silence.
+    # Retire cette ligne si tu supprimes un jour l'image locale.
+    pull_policy: never
+    container_name: documind-ollama
+    ports:
+      # hôte:conteneur -> 11435 côté Windows pour ne pas entrer en conflit
+      # avec shop-ollama (11434). Dans le conteneur, Ollama reste sur 11434.
+      - "11435:11434"
+    volumes:
+      # Volume propre à DocuMind : les modèles survivent à un `down`,
+      # et ne sont pas mélangés avec ceux de HM-Retail.
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_models:
+    name: documind_ollama_models

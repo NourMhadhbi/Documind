@@ -1,0 +1,185 @@
+{
+  "ollama:qwen2.5:3b": {
+    "summary": {
+      "questions_ok": 6,
+      "errors": 0,
+      "avg_latency_s": 89.93,
+      "citation_rate": 0.0,
+      "refuses_trap": 1.0
+    },
+    "rows": [
+      {
+        "query": "How do I create a POST route in FastAPI?",
+        "trap": false,
+        "answer": "To create a POST route in FastAPI, you can use the path operation decorator `api_router.post(path)`. This decorator is part of the APIRouter class from fastapi. Here’s how you can define and use it:\n\n```python\nfrom fastapi import FastAPI, APIRouter\n\n# Initialize the FastAPI app\napp = FastAPI()\n\n# Create an instance of APIRouter to handle routes for a specific path or group of paths\napi_router = APIRouter()\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str):\n    return {\"item_id\": item_id}\n\n# Add POST route using the post method from api_router\n@api_router.post(\"/{path:path}\")\nasync def handle_post(path: str, request: Request):\n    # Here you can implement your logic for handling a POST request to the path resource.\n    return {\"message\": f\"POST request received for {path}\"}\n\n# Include the APIRouter with its routes in your main app\napp.include_router(api_router)\n```\n\nIn this example:\n- The `api_router` is created and configured with the FastAPI router instance.\n- A POST route at the path `/items/{item_id}` is defined using `@api_router.post(\"/{path:path}\")`.\n- Inside the handler function for this POST route, you can put your custom logic that responds to incoming POST requests.\n\nRemember to include the APIRouter in your main application by calling `app.include_router(api_router)`. This ensures all routes are correctly mapped and integrated into FastAPI's routing system.",
+        "sources": [
+          "advanced/additional-status-codes.md",
+          "how-to/extending-openapi.md",
+          "reference/apirouter.md",
+          "tutorial/bigger-applications.md",
+          "tutorial/first-steps.md"
+        ],
+        "latency_seconds": 97.612,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "How to declare path parameters?",
+        "trap": false,
+        "answer": "To declare path parameters in FastAPI, you can use the `Path` annotation. For example:\n\n```python\n# Extrait de source: docs_src/path_params/tutorial003_py310.py\n\n@app.get(\"/users/{user_id}\")\nasync def read_users(user_id: str = Path(...)):\n    # Your implementation here\n```\n\nIn this code snippet, `{user_id}` is a path parameter that is expected to be provided in the URL. The `Path` annotation indicates that it expects a string value.\n\nYou can also use predefined values with an Enum if you have specific valid values for the parameter:\n\n```python\n# Extrait de source: docs_src/path_params_numeric_validations/tutorial001_an_py310.py\n\nfrom enum import Enum, StrEnum\n\nclass ItemID(str, Enum):\n    \"\"\"A predefined value of item_id.\"\"\"\n    first_item = \"first-item\"\n    second_item = \"second-item\"\n\n@app.get(\"/items/{item_id}\", response_model=ItemID)\nasync def get_items(item_id: ItemID):\n    return item_id\n```\n\nIn this example, `item_id` can only be one of the predefined values defined in the Enum (`first_item`, or `second_item`).",
+        "sources": [
+          "tutorial/dependencies/global-dependencies.md",
+          "tutorial/path-params-numeric-validations.md",
+          "tutorial/path-params.md",
+          "tutorial/query-params.md"
+        ],
+        "latency_seconds": 56.276,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "How to validate request body with Pydantic?",
+        "trap": false,
+        "answer": "To validate a request body using Pydantic in FastAPI, you can define your request schema using Pydantic models and then apply the model as the `request_body` parameter for your endpoint. Here's how you can do it:\n\n1. **Define the Pydantic Model**: Define the schema that matches the expected data structure of the request body.\n\n2. **Apply the Pydantic Model to Request Body**: Use the model in combination with the `Request` class from FastAPI, specifying the `request_body` parameter as your defined model type.\n\nHere is an example based on the information provided:\n\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n    description: str = \"\"\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n\n# Example Pydantic model configuration to forbid extra headers, not relevant for validating request body but mentioned in the context:\nfrom pydantic import BaseModel\nfrom fastapi.params import Header\n\nclass ExtraForbidden(BaseModel):\n    tool: str = Field(..., embed=True, alias=\"tool\", title=\"Tool Parameter\")\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(\n    item_id: int,\n    accept: str = Header(None),\n    tool: ExtraForbidden = Header(None),\n    # Forbids extra headers like \"tool\" that aren't part of the API.\n):\n    return {\"message\": f\"Item with id {item_id} has been fetched.\"}\n```\n\nIn this example, `Item` is defined as a Pydantic model for request body validation. If an endpoint expects a request body, you can apply the model to validate it. For header validation, you use configuration from FastAPI's `Header` parameter along with Pydantic models.\n\nFor more complex scenarios involving YAML responses or additional response parameters, you'd typically extend your existing logic, possibly by using other methods like parsing YAML content directly or customizing Response Model as mentioned in the context.",
+        "sources": [
+          "advanced/path-operation-advanced-configuration.md",
+          "release-notes.md",
+          "tutorial/body.md",
+          "tutorial/header-param-models.md"
+        ],
+        "latency_seconds": 140.652,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "What is dependency injection in FastAPI?",
+        "trap": false,
+        "answer": "Dependency Injection in FastAPI { #dependency-injection-faas }\n\nIn FastAPI, Dependency Injection allows a developer to declare what dependencies (functions or classes) their path operation functions need to work. \n\nFastAPI provides the infrastructure to manage and inject these required dependencies automatically at runtime.\n\nFor example:\n\n- A function could be decorated with @app.dependencies to indicate it is a dependency.\n- Dependencies can be provided using yield, which FastAPI internally handles as part of its Dependency Injection system.\n- A Python class implementing `__call__` method (i.e., making it callable) can also be used as a dependency.\n\nThe core principle here is to keep your operations clean and decoupled from the infrastructure. This enables easier testing, maintenance, and integration with other components.",
+        "sources": [
+          "tutorial/dependencies/classes-as-dependencies.md",
+          "tutorial/dependencies/dependencies-with-yield.md",
+          "tutorial/dependencies/index.md"
+        ],
+        "latency_seconds": 50.353,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "How to return a custom HTTP status code?",
+        "trap": false,
+        "answer": "Pour retourner une réponse avec un code de statut HTTP personnalisé, vous pouvez utiliser la classe `Response` comme indiqué dans le document `advanced/custom-response.md`. Voici comment cela se fait :\n\n1. Vous devez déclarer une paramètre `response_class=Response` dans votre path operation.\n2. Ensuite, vous pouvez définir `status_code` et d'autres propriétés comme la `content`, les `headers` selon vos besoins.\n\nVoici un exemple de code basé sur ces informations :\n\n```python\nfrom fastapi import APIRouter, Response\n\nrouter = APIRouter()\n\n@router.get(\"/custom-status-code\")\nasync def custom_status_code_response():\n    response = Response(\n        content=\"This is a custom status response\",\n        headers={\"X-Custom-Header\": \"Value\"},\n        status_code=405  # Custom HTTP Status Code\n    )\n    return response\n```\n\nDans cet exemple, une réponse avec un code de statut HTTP personnalisé `405` est retournée. Vous pouvez utiliser n'importe quel code de statut HTTP valide comme celui-ci.",
+        "sources": [
+          "advanced/custom-response.md",
+          "advanced/response-change-status-code.md",
+          "tutorial/handling-errors.md",
+          "tutorial/response-status-code.md"
+        ],
+        "latency_seconds": 104.635,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "What is the recipe for a chocolate cake?",
+        "trap": true,
+        "answer": "Je ne sais pas. Ce n'est pas mentionné dans les sources fournies.",
+        "sources": [
+          "advanced/strict-content-type.md",
+          "async.md",
+          "release-notes.md",
+          "tutorial/cookie-param-models.md",
+          "tutorial/cors.md"
+        ],
+        "latency_seconds": 90.061,
+        "cites_expected": false,
+        "refused": true
+      }
+    ]
+  },
+  "ollama:llama3.2:3b": {
+    "summary": {
+      "questions_ok": 5,
+      "errors": 1,
+      "avg_latency_s": 85.9,
+      "citation_rate": 0.5,
+      "refuses_trap": 1.0
+    },
+    "rows": [
+      {
+        "query": "How do I create a POST route in FastAPI?",
+        "trap": false,
+        "answer": "Pour créer une route POST dans FastAPI, vous devez utiliser la méthode `POST` sur une instance de la classe `FastAPI` ou sur un objet `router`. \n\nVous pouvez utiliser l'annotation `@app.post()` pour définir une route POST :\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item(name: str):\n    # Code à exécuter lorsqu'une requête POST est envoyée à cette route\n    return {\"name\": name}\n```\n\nCette annotation déclare une route `/items/` qui accepte des données au format JSON et renvoie un objet JSON contenant le nom de l'élément créé. \n\nL'annotation `create_item` définit la fonction qui sera appelée lorsque la requête POST est traitée. Cette fonction peut être remplacée par toute logique de traitement souhaitée.\n\nEn utilisant les routes et les méthodes d'API, vous pouvez créer des API robustes et efficaces avec FastAPI.",
+        "sources": [
+          "advanced/additional-status-codes.md",
+          "how-to/extending-openapi.md",
+          "reference/apirouter.md",
+          "tutorial/bigger-applications.md",
+          "tutorial/first-steps.md"
+        ],
+        "latency_seconds": 135.16,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "How to declare path parameters?",
+        "trap": false,
+        "answer": "Selon la documentation de FastAPI, on peut déclarer des paramètres de route en utilisant l'annotation `Path` ou `Annotated[Path]`.\n\nL'utilisation de l'annotation `Path` est plus simple, mais moins flexible. Pour exemple :\n\n```python\nfrom fastapi import Path\n\n@app.get(\"/users/{user_id}\")\nasync def read_user(user_id: int = Path(...)):\n    return {\"user_id\": user_id}\n```\n\nEn revanche, utiliser `Annotated[Path]` permet de définir des paramètres de route avec plus de flexibilité. Par exemple :\n\n```python\nfrom fastapi import Path\n\nclass UserID(str, Enum):\n    me: str = \"me\"\n    any_user: str = \"any_user\"\n\n@app.get(\"/users/{user_id}\")\nasync def read_user(user_id: Annotated[Path(...), UserID]):\n    return {\"user_id\": user_id}\n```\n\nDans ce cas, le paramètre `user_id` peut prendre les valeurs définies dans l'Enum `UserID`.\n\nSource : \n- tutorial/path-params.md\n- tutorial/query-params.md",
+        "sources": [
+          "tutorial/dependencies/global-dependencies.md",
+          "tutorial/path-params-numeric-validations.md",
+          "tutorial/path-params.md",
+          "tutorial/query-params.md"
+        ],
+        "latency_seconds": 59.235,
+        "cites_expected": true,
+        "refused": false
+      },
+      {
+        "query": "How to validate request body with Pydantic?",
+        "trap": false,
+        "answer": "Pour valider le corps de la requête avec Pydantic, vous devez définir une classe Pydantic qui correspond au format de données attendu et utilisez la méthode `Model` pour spécifier les validation. Voici un exemple :\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Donnée(BaseModel):\n    a: str\n    b: int\n```\n\n Dans cet exemple, `Donnée` est une classe Pydantic qui contient deux champs : `a` qui doit être une chaîne de caractères et `b` qui doit être un entier. Lorsqu'un client envoie une requête avec ce format de données, FastAPI utilisera la classe `Donnée` pour valider les données et renvoyer l'erreur si celles-ci ne sont pas correctes.\n\n Vous pouvez également utiliser la méthode `.extra()`, pour permettre aux clients d'envoyer des headers supplémentaires :\n\n```python\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Donnée(BaseModel):\n    a: str\n    b: int\n\n@app.post(\"/donnees\")\nasync def read_donnees(donnée: Donnée = Depends()):\n    return donnée\n```\n\n Dans cet exemple, la méthode `Depends()` spécifie que la classe `Donnée` doit être utilisée pour valider les données de la requête.",
+        "sources": [
+          "advanced/path-operation-advanced-configuration.md",
+          "release-notes.md",
+          "tutorial/body.md",
+          "tutorial/header-param-models.md"
+        ],
+        "latency_seconds": 94.021,
+        "cites_expected": false,
+        "refused": false
+      },
+      {
+        "query": "What is dependency injection in FastAPI?",
+        "trap": false,
+        "answer": "D'après les extraits fournis, la documentation technique de FastAPI définit le Dependency Injection comme suit :\n\nLe Dependency Injection est une approche de programmation qui consiste à déclarer dans votre code les \"dependencies\" nécessaires pour qu'il fonctionne. Ce système sera alors géré par FastAPI.\n\nCela permet de :\n\n* Reutiliser du code partagé\n* Partager des connexions de base de données\n* Réaliser certaines tâches avec une application\n\nEn d'autres termes, le Dependency Injection est un moyen pour votre code de dire à la bibliothèque ce qu'il nécessite pour fonctionner et FastAPI s'occupera de fournir ces \"dependencies\" (ou les \"injecter\").\n\nSource :\n- tutorial/dependencies/index.md",
+        "sources": [
+          "tutorial/dependencies/classes-as-dependencies.md",
+          "tutorial/dependencies/dependencies-with-yield.md",
+          "tutorial/dependencies/index.md"
+        ],
+        "latency_seconds": 49.536,
+        "cites_expected": true,
+        "refused": false
+      },
+      {
+        "query": "How to return a custom HTTP status code?",
+        "trap": false,
+        "error": "Échec de la génération : Ollama n'a pas répondu dans les 360s : HTTPConnectionPool(host='localhost', port=11435): Read timed out. (read timeout=360)"
+      },
+      {
+        "query": "What is the recipe for a chocolate cake?",
+        "trap": true,
+        "answer": "Je suis DocuMind, votre assistant pour la documentation technique de FastAPI. Malheureusement, je ne connais pas d'information sur une recette de gâteau au chocolat dans les sources fournies.\n\nLes sources utilisées sont :\n\n- async.md\n- advanced/strict-content-type.md\n- tutorial/cookie-param-models.md\n- tutorial/cors.md\n- release-notes.md\n\nCes fichiers contiennent des informations sur la sécurité des APIs, la gestion des cookies et les mises à jour de la documentation de FastAPI, mais pas d'informations sur la recette d'un gâteau au chocolat.",
+        "sources": [
+          "advanced/strict-content-type.md",
+          "async.md",
+          "release-notes.md",
+          "tutorial/cookie-param-models.md",
+          "tutorial/cors.md"
+        ],
+        "latency_seconds": 91.536,
+        "cites_expected": false,
+        "refused": true
+      }
+    ]
+  }
+}
