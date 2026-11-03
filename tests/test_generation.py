@@ -114,7 +114,7 @@ def test_generate_answer_no_chunks_never_calls_llm():
     pas de risque que le modèle réponde avec ses connaissances générales."""
     with patch("src.generation.retrieve", return_value=[]), \
          patch("src.generation.get_llm_provider") as factory:
-        result = generate_answer("Question hors sujet")
+        result = generate_answer("Quelle est la recette du gâteau ?")
 
     factory.assert_not_called()
     assert result["sources"] == []
@@ -227,3 +227,66 @@ def test_build_prompt_strips_heading_anchors_but_not_other_braces():
     assert "{ #dependencies }" not in prompt
     assert "Dependencies" in prompt
     assert "{user_id}" in prompt                    # les accolades légitimes restent
+
+
+# ---------------------------------------------------------------
+# Sprint 5 : garde-fou de pertinence, contextes, refus localisés
+# ---------------------------------------------------------------
+
+from config import settings
+
+
+def _chunks(distance, text="Dependencies { #dependencies }\n\nBody."):
+    return [{"text": text, "source": "tutorial/dependencies/index.md", "score": distance}]
+
+
+def test_guard_refuses_without_calling_llm_when_distance_too_high(monkeypatch):
+    monkeypatch.setattr(settings, "max_distance", 0.5)
+    with patch("src.generation.retrieve", return_value=_chunks(0.9)), \
+         patch("src.generation.get_llm_provider") as factory:
+        result = generate_answer("What is the recipe for a chocolate cake?")
+
+    factory.assert_not_called()
+    assert result["refused"] is True and result["refusal_reason"] == "low_relevance"
+    assert result["answer"].startswith("I could not find")
+    assert result["sources"] == [] and result["contexts"] == []
+    assert result["min_distance"] == 0.9
+
+
+def test_guard_answer_is_in_the_language_of_the_question(monkeypatch):
+    monkeypatch.setattr(settings, "max_distance", 0.5)
+    with patch("src.generation.retrieve", return_value=_chunks(0.9)), \
+         patch("src.generation.get_llm_provider"):
+        arabic = generate_answer("ما هي وصفة كعكة الشوكولاتة؟")
+        french = generate_answer("Quelle est la recette du gâteau au chocolat ?")
+
+    assert arabic["language"] == "ar" and "لم أجد" in arabic["answer"]
+    assert french["language"] == "fr" and "n'ai pas trouvé" in french["answer"]
+
+
+def test_guard_lets_relevant_questions_through(monkeypatch):
+    monkeypatch.setattr(settings, "max_distance", 0.5)
+    with patch("src.generation.retrieve", return_value=_chunks(0.3)), \
+         patch("src.generation.get_llm_provider", return_value=_fake_provider("réponse")):
+        result = generate_answer("What is dependency injection?")
+
+    assert result["refused"] is False and result["answer"] == "réponse"
+
+
+def test_guard_is_disabled_by_default(monkeypatch):
+    monkeypatch.setattr(settings, "max_distance", None)
+    with patch("src.generation.retrieve", return_value=_chunks(1.9)), \
+         patch("src.generation.get_llm_provider", return_value=_fake_provider("réponse")):
+        result = generate_answer("What is dependency injection?")
+
+    assert result["refused"] is False
+
+
+def test_result_exposes_the_contexts_the_llm_saw_without_anchors(monkeypatch):
+    monkeypatch.setattr(settings, "max_distance", None)
+    with patch("src.generation.retrieve", return_value=_chunks(0.3)), \
+         patch("src.generation.get_llm_provider", return_value=_fake_provider("r")):
+        result = generate_answer("What is dependency injection?")
+
+    assert result["contexts"] == ["Dependencies\n\nBody."]
+    assert result["language"] == "en" and result["refusal_reason"] is None

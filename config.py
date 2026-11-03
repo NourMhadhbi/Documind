@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     mlflow_tracking_uri: str = ""
     mlflow_tracking_username: str = ""   
     mlflow_tracking_password: str = ""  
+    max_distance: float = 0.96
 
 
 

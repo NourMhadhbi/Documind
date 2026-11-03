@@ -1,0 +1,334 @@
+{
+  "version": 1,
+  "description": "Jeu de questions de référence DocuMind. Les sources attendues sont vérifiées À LA MAIN dans data/raw, jamais déduites du retrieval.",
+  "questions": [
+    {
+      "id": "post-route-en",
+      "topic": "post-route",
+      "lang": "en",
+      "question": "How do I create a POST route in FastAPI?",
+      "expected_sources": [
+        "tutorial/first-steps.md",
+        "tutorial/body.md"
+      ],
+      "trap": false,
+      "verified": true,
+      "notes": "Vérité terrain ambiguë : first-steps.md ne cite @app.post() que dans une liste, body.md est la page principale sur l'envoi de données. Les deux sont acceptées."
+    },
+    {
+      "id": "post-route-fr",
+      "topic": "post-route",
+      "lang": "fr",
+      "question": "Comment créer une route POST dans FastAPI ?",
+      "expected_sources": [
+        "tutorial/first-steps.md",
+        "tutorial/body.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "post-route-ar",
+      "topic": "post-route",
+      "lang": "ar",
+      "question": "كيف أنشئ مسار POST في FastAPI؟",
+      "expected_sources": [
+        "tutorial/first-steps.md",
+        "tutorial/body.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "path-params-en",
+      "topic": "path-params",
+      "lang": "en",
+      "question": "How to declare path parameters in FastAPI?",
+      "expected_sources": [
+        "tutorial/path-params.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "path-params-fr",
+      "topic": "path-params",
+      "lang": "fr",
+      "question": "Comment déclarer des paramètres de chemin dans FastAPI ?",
+      "expected_sources": [
+        "tutorial/path-params.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "path-params-ar",
+      "topic": "path-params",
+      "lang": "ar",
+      "question": "كيف أعرّف معاملات المسار (path parameters) في FastAPI؟",
+      "expected_sources": [
+        "tutorial/path-params.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "request-body-en",
+      "topic": "request-body",
+      "lang": "en",
+      "question": "How to validate request body with Pydantic?",
+      "expected_sources": [
+        "tutorial/body.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "request-body-fr",
+      "topic": "request-body",
+      "lang": "fr",
+      "question": "Comment valider le corps d'une requête avec Pydantic ?",
+      "expected_sources": [
+        "tutorial/body.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "request-body-ar",
+      "topic": "request-body",
+      "lang": "ar",
+      "question": "كيف أتحقق من صحة جسم الطلب باستخدام Pydantic؟",
+      "expected_sources": [
+        "tutorial/body.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "dependency-injection-en",
+      "topic": "dependency-injection",
+      "lang": "en",
+      "question": "What is dependency injection in FastAPI?",
+      "expected_sources": [
+        "tutorial/dependencies/index.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "dependency-injection-fr",
+      "topic": "dependency-injection",
+      "lang": "fr",
+      "question": "Qu'est-ce que l'injection de dépendances dans FastAPI ?",
+      "expected_sources": [
+        "tutorial/dependencies/index.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "dependency-injection-ar",
+      "topic": "dependency-injection",
+      "lang": "ar",
+      "question": "ما هو حقن التبعيات (dependency injection) في FastAPI؟",
+      "expected_sources": [
+        "tutorial/dependencies/index.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "status-code-en",
+      "topic": "status-code",
+      "lang": "en",
+      "question": "How to return a custom HTTP status code?",
+      "expected_sources": [
+        "tutorial/response-status-code.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "status-code-fr",
+      "topic": "status-code",
+      "lang": "fr",
+      "question": "Comment retourner un code de statut HTTP personnalisé ?",
+      "expected_sources": [
+        "tutorial/response-status-code.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "status-code-ar",
+      "topic": "status-code",
+      "lang": "ar",
+      "question": "كيف أُرجع رمز حالة HTTP مخصصًا؟",
+      "expected_sources": [
+        "tutorial/response-status-code.md"
+      ],
+      "trap": false,
+      "verified": true
+    },
+    {
+      "id": "trap-cake-en",
+      "topic": "trap-cake",
+      "lang": "en",
+      "question": "What is the recipe for a chocolate cake?",
+      "expected_sources": [],
+      "trap": true,
+      "verified": true,
+      "notes": "Hors corpus : le système doit refuser de répondre."
+    },
+    {
+      "id": "trap-cake-fr",
+      "topic": "trap-cake",
+      "lang": "fr",
+      "question": "Quelle est la recette du gâteau au chocolat ?",
+      "expected_sources": [],
+      "trap": true,
+      "verified": true,
+      "notes": "Hors corpus : le système doit refuser de répondre."
+    },
+    {
+      "id": "trap-cake-ar",
+      "topic": "trap-cake",
+      "lang": "ar",
+      "question": "ما هي وصفة كعكة الشوكولاتة؟",
+      "expected_sources": [],
+      "trap": true,
+      "verified": true,
+      "notes": "Hors corpus : le système doit refuser de répondre."
+    },
+    {
+      "id": "error-handling-en",
+      "topic": "error-handling",
+      "lang": "en",
+      "question": "How do I handle errors in FastAPI?",
+      "expected_sources": [
+        "tutorial/handling-errors.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "error-handling-fr",
+      "topic": "error-handling",
+      "lang": "fr",
+      "question": "Comment gérer les erreurs dans FastAPI ?",
+      "expected_sources": [
+        "tutorial/handling-errors.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "error-handling-ar",
+      "topic": "error-handling",
+      "lang": "ar",
+      "question": "كيف أتعامل مع الأخطاء في FastAPI؟",
+      "expected_sources": [
+        "tutorial/handling-errors.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "request-files-en",
+      "topic": "request-files",
+      "lang": "en",
+      "question": "How do I receive uploaded files in FastAPI?",
+      "expected_sources": [
+        "tutorial/request-files.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "request-files-fr",
+      "topic": "request-files",
+      "lang": "fr",
+      "question": "Comment recevoir des fichiers envoyés dans FastAPI ?",
+      "expected_sources": [
+        "tutorial/request-files.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "request-files-ar",
+      "topic": "request-files",
+      "lang": "ar",
+      "question": "كيف أستقبل الملفات المرفوعة في FastAPI؟",
+      "expected_sources": [
+        "tutorial/request-files.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "middleware-en",
+      "topic": "middleware",
+      "lang": "en",
+      "question": "What is middleware in FastAPI and how do I use it?",
+      "expected_sources": [
+        "tutorial/middleware.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "middleware-fr",
+      "topic": "middleware",
+      "lang": "fr",
+      "question": "Qu'est-ce qu'un middleware dans FastAPI et comment l'utiliser ?",
+      "expected_sources": [
+        "tutorial/middleware.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "middleware-ar",
+      "topic": "middleware",
+      "lang": "ar",
+      "question": "ما هو الوسيط البرمجي (middleware) في FastAPI وكيف أستخدمه؟",
+      "expected_sources": [
+        "tutorial/middleware.md"
+      ],
+      "trap": false,
+      "verified": false
+    },
+    {
+      "id": "trap-japan-en",
+      "topic": "trap-geography",
+      "lang": "en",
+      "question": "What is the capital of Japan?",
+      "expected_sources": [],
+      "trap": true,
+      "verified": true,
+      "notes": "Question hors corpus FastAPI."
+    },
+    {
+      "id": "trap-football-fr",
+      "topic": "trap-sport",
+      "lang": "fr",
+      "question": "Quelle équipe a remporté la Coupe du monde de football en 1998 ?",
+      "expected_sources": [],
+      "trap": true,
+      "verified": true,
+      "notes": "Question hors corpus FastAPI."
+    },
+    {
+      "id": "trap-chemistry-ar",
+      "topic": "trap-chemistry",
+      "lang": "ar",
+      "question": "ما هي الصيغة الكيميائية للماء؟",
+      "expected_sources": [],
+      "trap": true,
+      "verified": true,
+      "notes": "Question hors corpus FastAPI."
+    }
+  ]
+}

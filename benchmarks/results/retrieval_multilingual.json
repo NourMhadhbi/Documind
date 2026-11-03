@@ -1,0 +1,547 @@
+{
+  "meta": {
+    "run_name": "multilingual",
+    "note": "",
+    "top_k": 5,
+    "golden": "tests/golden_qa.json",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "index_path": "data/index",
+    "collection": "documind_chunks",
+    "n_questions": 30,
+    "created_at": "2026-10-31T18:46:16+00:00"
+  },
+  "rows": [
+    {
+      "id": "post-route-en",
+      "lang": "en",
+      "topic": "post-route",
+      "trap": false,
+      "question": "How do I create a POST route in FastAPI?",
+      "rank": 2,
+      "top1_distance": 0.8389642238616943,
+      "sources": [
+        "tutorial/bigger-applications.md",
+        "tutorial/first-steps.md",
+        "tutorial/bigger-applications.md",
+        "advanced/path-operation-advanced-configuration.md",
+        "reference/apirouter.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "post-route-fr",
+      "lang": "fr",
+      "topic": "post-route",
+      "trap": false,
+      "question": "Comment créer une route POST dans FastAPI ?",
+      "rank": 4,
+      "top1_distance": 1.1148195266723633,
+      "sources": [
+        "tutorial/bigger-applications.md",
+        "reference/parameters.md",
+        "how-to/extending-openapi.md",
+        "tutorial/body.md",
+        "how-to/extending-openapi.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "post-route-ar",
+      "lang": "ar",
+      "topic": "post-route",
+      "trap": false,
+      "question": "كيف أنشئ مسار POST في FastAPI؟",
+      "rank": null,
+      "top1_distance": 1.0878400802612305,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "path-params-en",
+      "lang": "en",
+      "topic": "path-params",
+      "trap": false,
+      "question": "How to declare path parameters in FastAPI?",
+      "rank": 1,
+      "top1_distance": 0.5007981061935425,
+      "sources": [
+        "tutorial/path-params.md",
+        "advanced/path-operation-advanced-configuration.md",
+        "tutorial/body.md",
+        "tutorial/query-params.md",
+        "tutorial/dependencies/index.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "path-params-fr",
+      "lang": "fr",
+      "topic": "path-params",
+      "trap": false,
+      "question": "Comment déclarer des paramètres de chemin dans FastAPI ?",
+      "rank": null,
+      "top1_distance": 1.1393330097198486,
+      "sources": [
+        "tutorial/body.md",
+        "reference/parameters.md",
+        "tutorial/dependencies/sub-dependencies.md",
+        "tutorial/query-param-models.md",
+        "tutorial/header-params.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "path-params-ar",
+      "lang": "ar",
+      "topic": "path-params",
+      "trap": false,
+      "question": "كيف أعرّف معاملات المسار (path parameters) في FastAPI؟",
+      "rank": null,
+      "top1_distance": 1.0851824283599854,
+      "sources": [
+        "release-notes.md",
+        "tutorial/body.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "request-body-en",
+      "lang": "en",
+      "topic": "request-body",
+      "trap": false,
+      "question": "How to validate request body with Pydantic?",
+      "rank": 2,
+      "top1_distance": 0.5797297954559326,
+      "sources": [
+        "release-notes.md",
+        "tutorial/body.md",
+        "advanced/settings.md",
+        "tutorial/body.md",
+        "tutorial/body-fields.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "request-body-fr",
+      "lang": "fr",
+      "topic": "request-body",
+      "trap": false,
+      "question": "Comment valider le corps d'une requête avec Pydantic ?",
+      "rank": null,
+      "top1_distance": 1.140216588973999,
+      "sources": [
+        "release-notes.md",
+        "advanced/settings.md",
+        "release-notes.md",
+        "advanced/settings.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "request-body-ar",
+      "lang": "ar",
+      "topic": "request-body",
+      "trap": false,
+      "question": "كيف أتحقق من صحة جسم الطلب باستخدام Pydantic؟",
+      "rank": null,
+      "top1_distance": 1.0236518383026123,
+      "sources": [
+        "advanced/settings.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "dependency-injection-en",
+      "lang": "en",
+      "topic": "dependency-injection",
+      "trap": false,
+      "question": "What is dependency injection in FastAPI?",
+      "rank": 1,
+      "top1_distance": 0.4508569836616516,
+      "sources": [
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/dependencies-with-yield.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "dependency-injection-fr",
+      "lang": "fr",
+      "topic": "dependency-injection",
+      "trap": false,
+      "question": "Qu'est-ce que l'injection de dépendances dans FastAPI ?",
+      "rank": 1,
+      "top1_distance": 0.8466082215309143,
+      "sources": [
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/dependencies/sub-dependencies.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "dependency-injection-ar",
+      "lang": "ar",
+      "topic": "dependency-injection",
+      "trap": false,
+      "question": "ما هو حقن التبعيات (dependency injection) في FastAPI؟",
+      "rank": 1,
+      "top1_distance": 1.0722802877426147,
+      "sources": [
+        "tutorial/dependencies/index.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "status-code-en",
+      "lang": "en",
+      "topic": "status-code",
+      "trap": false,
+      "question": "How to return a custom HTTP status code?",
+      "rank": 2,
+      "top1_distance": 0.6782116889953613,
+      "sources": [
+        "advanced/response-change-status-code.md",
+        "tutorial/response-status-code.md",
+        "tutorial/handling-errors.md",
+        "advanced/response-change-status-code.md",
+        "tutorial/response-status-code.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "status-code-fr",
+      "lang": "fr",
+      "topic": "status-code",
+      "trap": false,
+      "question": "Comment retourner un code de statut HTTP personnalisé ?",
+      "rank": 2,
+      "top1_distance": 1.2970530986785889,
+      "sources": [
+        "release-notes.md",
+        "tutorial/response-status-code.md",
+        "advanced/security/http-basic-auth.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "status-code-ar",
+      "lang": "ar",
+      "topic": "status-code",
+      "trap": false,
+      "question": "كيف أُرجع رمز حالة HTTP مخصصًا؟",
+      "rank": null,
+      "top1_distance": 1.2935800552368164,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "trap-cake-en",
+      "lang": "en",
+      "topic": "trap-cake",
+      "trap": true,
+      "question": "What is the recipe for a chocolate cake?",
+      "rank": null,
+      "top1_distance": 1.6160945892333984,
+      "sources": [
+        "help-fastapi.md",
+        "async.md",
+        "advanced/strict-content-type.md",
+        "deployment/cloud.md",
+        "how-to/index.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "trap-cake-fr",
+      "lang": "fr",
+      "topic": "trap-cake",
+      "trap": true,
+      "question": "Quelle est la recette du gâteau au chocolat ?",
+      "rank": null,
+      "top1_distance": 1.6660101413726807,
+      "sources": [
+        "tutorial/dependencies/dependencies-with-yield.md",
+        "tutorial/dependencies/sub-dependencies.md",
+        "release-notes.md",
+        "release-notes.md",
+        "tutorial/bigger-applications.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "trap-cake-ar",
+      "lang": "ar",
+      "topic": "trap-cake",
+      "trap": true,
+      "question": "ما هي وصفة كعكة الشوكولاتة؟",
+      "rank": null,
+      "top1_distance": 1.324581503868103,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "error-handling-en",
+      "lang": "en",
+      "topic": "error-handling",
+      "trap": false,
+      "question": "How do I handle errors in FastAPI?",
+      "rank": 2,
+      "top1_distance": 0.6731230020523071,
+      "sources": [
+        "tutorial/response-status-code.md",
+        "tutorial/handling-errors.md",
+        "tutorial/dependencies/dependencies-with-yield.md",
+        "tutorial/handling-errors.md",
+        "tutorial/handling-errors.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "error-handling-fr",
+      "lang": "fr",
+      "topic": "error-handling",
+      "trap": false,
+      "question": "Comment gérer les erreurs dans FastAPI ?",
+      "rank": null,
+      "top1_distance": 1.299507737159729,
+      "sources": [
+        "reference/parameters.md",
+        "history-design-future.md",
+        "release-notes.md",
+        "about/index.md",
+        "advanced/websockets.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "error-handling-ar",
+      "lang": "ar",
+      "topic": "error-handling",
+      "trap": false,
+      "question": "كيف أتعامل مع الأخطاء في FastAPI؟",
+      "rank": null,
+      "top1_distance": 1.1259198188781738,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "request-files-en",
+      "lang": "en",
+      "topic": "request-files",
+      "trap": false,
+      "question": "How do I receive uploaded files in FastAPI?",
+      "rank": 2,
+      "top1_distance": 0.4867629408836365,
+      "sources": [
+        "reference/uploadfile.md",
+        "tutorial/request-files.md",
+        "tutorial/request-files.md",
+        "tutorial/request-files.md",
+        "tutorial/request-files.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "request-files-fr",
+      "lang": "fr",
+      "topic": "request-files",
+      "trap": false,
+      "question": "Comment recevoir des fichiers envoyés dans FastAPI ?",
+      "rank": 3,
+      "top1_distance": 1.2715609073638916,
+      "sources": [
+        "reference/parameters.md",
+        "tutorial/header-params.md",
+        "tutorial/request-files.md",
+        "tutorial/body.md",
+        "translations.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "request-files-ar",
+      "lang": "ar",
+      "topic": "request-files",
+      "trap": false,
+      "question": "كيف أستقبل الملفات المرفوعة في FastAPI؟",
+      "rank": null,
+      "top1_distance": 1.1731598377227783,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "newsletter.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "middleware-en",
+      "lang": "en",
+      "topic": "middleware",
+      "trap": false,
+      "question": "What is middleware in FastAPI and how do I use it?",
+      "rank": 2,
+      "top1_distance": 0.7167749404907227,
+      "sources": [
+        "reference/middleware.md",
+        "tutorial/middleware.md",
+        "reference/fastapi.md",
+        "reference/index.md",
+        "advanced/middleware.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "middleware-fr",
+      "lang": "fr",
+      "topic": "middleware",
+      "trap": false,
+      "question": "Qu'est-ce qu'un middleware dans FastAPI et comment l'utiliser ?",
+      "rank": 2,
+      "top1_distance": 0.9306684136390686,
+      "sources": [
+        "reference/middleware.md",
+        "tutorial/middleware.md",
+        "reference/fastapi.md",
+        "index.md",
+        "advanced/middleware.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "middleware-ar",
+      "lang": "ar",
+      "topic": "middleware",
+      "trap": false,
+      "question": "ما هو الوسيط البرمجي (middleware) في FastAPI وكيف أستخدمه؟",
+      "rank": null,
+      "top1_distance": 0.9953249096870422,
+      "sources": [
+        "reference/middleware.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "trap-japan-en",
+      "lang": "en",
+      "topic": "trap-geography",
+      "trap": true,
+      "question": "What is the capital of Japan?",
+      "rank": null,
+      "top1_distance": 1.4058821201324463,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "trap-football-fr",
+      "lang": "fr",
+      "topic": "trap-sport",
+      "trap": true,
+      "question": "Quelle équipe a remporté la Coupe du monde de football en 1998 ?",
+      "rank": null,
+      "top1_distance": 1.6229761838912964,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "how-to/custom-request-and-route.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    },
+    {
+      "id": "trap-chemistry-ar",
+      "lang": "ar",
+      "topic": "trap-chemistry",
+      "trap": true,
+      "question": "ما هي الصيغة الكيميائية للماء؟",
+      "rank": null,
+      "top1_distance": 1.3161922693252563,
+      "sources": [
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md",
+        "release-notes.md"
+      ],
+      "error": null
+    }
+  ],
+  "summary": {
+    "en": {
+      "n": 8,
+      "recall": 1.0,
+      "mrr": 0.625
+    },
+    "overall": {
+      "n": 24,
+      "recall": 0.5833333333333334,
+      "mrr": 0.3576388888888889
+    },
+    "fr": {
+      "n": 8,
+      "recall": 0.625,
+      "mrr": 0.3229166666666667
+    },
+    "ar": {
+      "n": 8,
+      "recall": 0.125,
+      "mrr": 0.125
+    }
+  }
+}

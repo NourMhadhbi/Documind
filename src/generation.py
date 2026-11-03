@@ -11,6 +11,7 @@ from typing import List, Dict, Optional
 
 from config import settings
 from src.ingestion import RE_HEADING_ANCHOR
+from src.language import REFUSAL_MESSAGES, detect_language
 from src.retrieval import retrieve, RetrievalError
 from src.llm_provider import get_llm_provider, LLMProviderError
 
@@ -60,15 +61,20 @@ def detect_language_hint(question: str) -> Optional[str]:
     return "arabe" if _ARABIC_SCRIPT.search(question or "") else None
 
 
+def _text_for_llm(chunk: Dict) -> str:
+    """Texte d'un chunk tel que le LLM le voit : les ancres `{ #...}` aident le
+    retrieval (texte indexé) mais n'ont aucun intérêt pour lui, qui pourrait les
+    recopier. Ce même texte est exposé comme « contexte » à l'évaluation."""
+    return RE_HEADING_ANCHOR.sub("", chunk["text"])
+
+
 def build_prompt(question: str, chunks: List[Dict]) -> str:
     if not chunks:
         context_block = "(Aucun extrait de documentation pertinent n'a été trouvé.)"
     else:
         parts = []
         for i, chunk in enumerate(chunks, start=1):
-            # Les ancres `{ #...}` aident le retrieval (texte indexé) mais n'ont aucun
-            # intérêt pour le LLM, qui pourrait les recopier : on les retire ici.
-            text = RE_HEADING_ANCHOR.sub("", chunk["text"])
+            text = _text_for_llm(chunk)
             parts.append(f"[Extrait {i} — source: {chunk['source']}]\n{text}")
         context_block = "\n\n".join(parts)
 
@@ -94,10 +100,32 @@ def _active_model_name() -> str:
     return settings.llm_model_name
 
 
+def _refusal(question: str, reason: str, min_distance: Optional[float]) -> Dict:
+    """Réponse « je n'ai pas trouvé » dans la langue de la question, SANS appel au LLM
+    (aucun coût, aucun risque de réponse tirée des connaissances générales du modèle)."""
+    language = detect_language(question) or "en"
+    return {
+        "answer": REFUSAL_MESSAGES[language],
+        "sources": [],
+        "chunks_used": 0,
+        "contexts": [],
+        "refused": True,
+        "refusal_reason": reason,
+        "language": language,
+        "min_distance": min_distance,
+        "llm_provider": settings.llm_provider,
+        "llm_model": _active_model_name(),
+        "latency_seconds": 0.0,
+    }
+
+
 def generate_answer(question: str, top_k: Optional[int] = None) -> Dict:
     """
-    Pipeline RAG complet : retrieval + génération, indépendant du
-    fournisseur LLM choisi dans la config (settings.llm_provider).
+    Pipeline RAG complet : retrieval, garde-fou de pertinence, génération.
+
+    Retourne toujours les mêmes clés : answer, sources, chunks_used, contexts (textes
+    vus par le LLM), refused / refusal_reason ("no_chunks" ou "low_relevance"),
+    language (de la question), min_distance, llm_provider, llm_model, latency_seconds.
     """
     top_k = top_k if top_k is not None else settings.retrieval_top_k
 
@@ -106,19 +134,21 @@ def generate_answer(question: str, top_k: Optional[int] = None) -> Dict:
     except RetrievalError as exc:
         raise GenerationError(f"Échec du retrieval : {exc}") from exc
 
+    scores = [c["score"] for c in chunks if c.get("score") is not None]
+    min_distance = min(scores) if scores else None
+
     if settings.dedupe_chunks_by_source:
         chunks = _deduplicate_by_source(chunks, settings.max_chunks_per_source)
 
     if not chunks:
         logger.warning("Aucun chunk pertinent pour la question : '%s'", question)
-        return {
-            "answer": "Je n'ai pas trouvé d'information sur ce sujet dans la documentation.",
-            "sources": [],
-            "chunks_used": 0,
-            "llm_provider": settings.llm_provider,
-            "llm_model": _active_model_name(),
-            "latency_seconds": 0.0,
-        }
+        return _refusal(question, "no_chunks", min_distance)
+
+    if (settings.max_distance is not None and min_distance is not None
+            and min_distance > settings.max_distance):
+        logger.info("Garde-fou : distance %.3f > seuil %.3f, pas d'appel au LLM",
+                    min_distance, settings.max_distance)
+        return _refusal(question, "low_relevance", min_distance)
 
     prompt = build_prompt(question, chunks)
 
@@ -130,13 +160,16 @@ def generate_answer(question: str, top_k: Optional[int] = None) -> Dict:
         raise GenerationError(f"Échec de la génération : {exc}") from exc
     latency = time.perf_counter() - t0
 
-    sources = sorted(set(chunk["source"] for chunk in chunks))
-
     return {
         "answer": answer_text,
-        "sources": sources,
+        "sources": sorted(set(chunk["source"] for chunk in chunks)),
         "chunks_used": len(chunks),
-        "llm_provider": settings.llm_provider,  # utile pour comparer les runs (Sprint 5/MLflow)
+        "contexts": [_text_for_llm(chunk) for chunk in chunks],
+        "refused": False,
+        "refusal_reason": None,
+        "language": detect_language(question),
+        "min_distance": min_distance,
+        "llm_provider": settings.llm_provider,
         "llm_model": _active_model_name(),
         "latency_seconds": round(latency, 3),  # temps de l'appel LLM seul
     }

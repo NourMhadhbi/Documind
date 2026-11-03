@@ -232,8 +232,8 @@ Projet développé en méthodologie **Scrum**, avec des sprints hebdomadaires ay
 |---|---|---|
 | 1 | Setup DagsHub + Ingestion & Chunking | ✅ terminé |
 | 2 | Embeddings & Index vectoriel | ✅ terminé  |
-| 3 | Retrieval | ⬜ à venir |
-| 4 | Génération (pipeline RAG complet) | ⬜ à venir |
+| 3 | Retrieval | ✅ terminé |
+| 4 | Génération (pipeline RAG complet) |  ✅  terminé |
 | 5 | Évaluation (RAGAS + MLflow) | ⬜ à venir |
 | 6 | API FastAPI | ⬜ à venir |
 | 7 | Tests de non-régression + Docker | ⬜ à venir |

@@ -1,0 +1,227 @@
+{
+  "meta": {
+    "run_name": "llama",
+    "golden": "tests/golden_qa.json",
+    "n_questions": 6,
+    "llm_provider": "ollama",
+    "llm_model": "qwen2.5:3b",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "index_path": "data/index",
+    "max_distance": 0.96,
+    "retrieval_top_k": 5,
+    "created_at": "2026-10-31T19:53:52+00:00"
+  },
+  "rows": [
+    {
+      "id": "post-route-en",
+      "lang": "en",
+      "topic": "post-route",
+      "trap": false,
+      "question": "How do I create a POST route in FastAPI?",
+      "reference": null,
+      "expected_sources": [
+        "tutorial/first-steps.md",
+        "tutorial/body.md"
+      ],
+      "error": null,
+      "answer": "To create a POST route in FastAPI, you can define your path operation using the `@router.post()` decorator. Here is an example of how to set up a basic POST endpoint:\n\n```python\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.post(\"/items/\")\nasync def create_item():\n    return {\"item\": \"created\"}\n```\n\nIn this example, `/items/` will be the path for a POST request. When you send a POST request to `https://yourserver/items/`, FastAPI will call the function `create_item()` which returns an HTTP response of type `dict`.\n\nIf your application has more complex routing or needs to include routers from other modules, you should include them properly according to the guide provided in the tutorial/bigger-applications.md file.",
+      "sources": [
+        "advanced/path-operation-advanced-configuration.md",
+        "reference/apirouter.md",
+        "tutorial/bigger-applications.md",
+        "tutorial/first-steps.md"
+      ],
+      "contexts": [
+        "e through the earlier inclusion too.\n\nAvoid directly mutating router.routes after including a router. FastAPI treats router inclusion as live, so the original router and its routes remain part of routing and OpenAPI generation.\n\nUse documented APIs such as path operation decorators and .include_router() to add routes and routers.\n\nTreat router.routes as a lower-level route tree that can contain route definitions and included routers, and avoid relying on it as a flat list of final path operations.",
+        "rom Starlette.\n\nYou can use all the Starlette functionality with FastAPI too.\n\nStep 2: create a FastAPI \"instance\"\n\nHere the app variable will be an \"instance\" of the class FastAPI.\n\nThis will be the main point of interaction to create all your API.\n\nStep 3: create a path operation\n\nPath\n\n\"Path\" here refers to the last part of the URL starting from the first /.\n\nSo, in a URL like:\n\n```\nhttps://example.com/items/foo\n```\n\n...the path would be:\n\n```\n/items/foo\n```\n\nA \"path\" is also commonly called an \"endpoint\" or a \"route\".\n\nWhile building an API, the \"path\" is the main way to separate \"concerns\" and \"resources\".\n\nOperation\n\n\"Operation\" here refers to one of the HTTP \"methods\".\n\nOne of:\n\n* POST",
+        "Path Operation Advanced Configuration\n\nOpenAPI operationId\n\nIf you are not an \"expert\" in OpenAPI, you probably don't need this.\n\nYou can set the OpenAPI operationId to be used in your path operation with the parameter operation_id.\n\nYou would have to make sure that it is unique for each operation.\n\nUsing the path operation function name as the operationId\n\nIf you want to use your APIs' function names as operationIds, you can pass a custom generate_unique_id_function to FastAPI.\n\nThe function receives each APIRoute and returns the operationId to use for that path operation.\n\nIf you do this, you have to make sure each one of your path operation functions has a u",
+        "APIRouter class\n\nHere's the reference information for the APIRouter class, with all its parameters, attributes and methods.\n\nYou can import the APIRouter class directly from fastapi:\n\n```python\nfrom fastapi import APIRouter\n```\n\n::: fastapi.APIRouter\n options:\n members:\n - websocket\n - include_router\n - frontend\n - get\n - put\n - post\n - delete\n - options\n - head\n - patch\n - trace\n - on_event"
+      ],
+      "refused": false,
+      "refusal_reason": null,
+      "latency_seconds": 43.53,
+      "min_distance": 0.8389642238616943,
+      "llm_provider": "ollama",
+      "llm_model": "qwen2.5:3b",
+      "language_ok": true,
+      "source_ok": true,
+      "invalid_citations": []
+    },
+    {
+      "id": "post-route-fr",
+      "lang": "fr",
+      "topic": "post-route",
+      "trap": false,
+      "question": "Comment créer une route POST dans FastAPI ?",
+      "reference": null,
+      "expected_sources": [
+        "tutorial/first-steps.md",
+        "tutorial/body.md"
+      ],
+      "error": null,
+      "answer": "Je n'ai pas trouvé d'information sur ce sujet dans la documentation.",
+      "sources": [],
+      "contexts": [],
+      "refused": true,
+      "refusal_reason": "low_relevance",
+      "latency_seconds": 0.0,
+      "min_distance": 1.1148195266723633,
+      "llm_provider": "ollama",
+      "llm_model": "qwen2.5:3b",
+      "language_ok": true,
+      "source_ok": false,
+      "invalid_citations": []
+    },
+    {
+      "id": "post-route-ar",
+      "lang": "ar",
+      "topic": "post-route",
+      "trap": false,
+      "question": "كيف أنشئ مسار POST في FastAPI؟",
+      "reference": null,
+      "expected_sources": [
+        "tutorial/first-steps.md",
+        "tutorial/body.md"
+      ],
+      "error": null,
+      "answer": "لم أجد معلومات حول هذا الموضوع في الوثائق.",
+      "sources": [],
+      "contexts": [],
+      "refused": true,
+      "refusal_reason": "low_relevance",
+      "latency_seconds": 0.0,
+      "min_distance": 1.0878400802612305,
+      "llm_provider": "ollama",
+      "llm_model": "qwen2.5:3b",
+      "language_ok": true,
+      "source_ok": false,
+      "invalid_citations": []
+    },
+    {
+      "id": "path-params-en",
+      "lang": "en",
+      "topic": "path-params",
+      "trap": false,
+      "question": "How to declare path parameters in FastAPI?",
+      "reference": null,
+      "expected_sources": [
+        "tutorial/path-params.md"
+      ],
+      "error": null,
+      "answer": "In FastAPI, path parameters are declared using the `Path` annotation within your endpoint function. This allows you to define what values should be accepted for a given path segment. For example:\n\n```python\nfrom fastapi import APIRouter, Path\n\nrouter = APIRouter()\n\n@router.get(\"/items/{item_id}\")\nasync def read_item(item_id: str = Path(...)):\n    # item_id is expected to contain the ID of an item in your database.\n    pass  # Placeholder for actual logic.\n```\n\nIn this example, `item_id` is a path parameter that FastAPI expects to receive as part of the URL. The `Path(...)` annotation indicates that it should be taken from the URL path.\n\nFastAPI automatically handles the extraction of these parameters and makes them available within your endpoint function as keyword arguments. You can then use these parameters in your application logic, depending on their type or whether they are defined using a Pydantic model.\n\nYou can also specify default values for path parameters:\n\n```python\n@router.get(\"/items/{item_id}\")\nasync def read_item(item_id: str = Path(..., default=\"default-item\")):\n    return {\"item_id\": item_id}\n```\n\nHere, `item_id` defaults to `\"default-item\"` if no value is provided in the URL.",
+      "sources": [
+        "advanced/path-operation-advanced-configuration.md",
+        "tutorial/body.md",
+        "tutorial/dependencies/index.md",
+        "tutorial/path-params.md",
+        "tutorial/query-params.md"
+      ],
+      "contexts": [
+        "``\n\nPath parameters containing paths\n\nLet's say you have a path operation with a path /files/{file_path}.\n\nBut you need file_path itself to contain a path, like home/johndoe/myfile.txt.\n\nSo, the URL for that file would be something like: /files/home/johndoe/myfile.txt.\n\nOpenAPI support\n\nOpenAPI doesn't support a way to declare a path parameter to contain a path inside, as that could lead to scenarios that are difficult to test and define.\n\nNevertheless, you can still do it in FastAPI, using one of the internal tools from Starlette.\n\nAnd the docs would still work, although not adding any documentation telling that the parameter should contain a path.\n\nPath convertor\n\nUsing an option directly from Starlette you ca",
+        "Path Operation Advanced Configuration\n\nOpenAPI operationId\n\nIf you are not an \"expert\" in OpenAPI, you probably don't need this.\n\nYou can set the OpenAPI operationId to be used in your path operation with the parameter operation_id.\n\nYou would have to make sure that it is unique for each operation.\n\nUsing the path operation function name as the operationId\n\nIf you want to use your APIs' function names as operationIds, you can pass a custom generate_unique_id_function to FastAPI.\n\nThe function receives each APIRoute and returns the operationId to use for that path operation.\n\nIf you do this, you have to make sure each one of your path operation functions has a u",
+        " that the function parameters that match path parameters should be taken from the path, and that function parameters that are declared to be Pydantic models should be taken from the request body.\n\nRequest body + path + query parameters\n\nYou can also declare body, path and query parameters, all at the same time.\n\nFastAPI will recognize each of them and take the data from the correct place.\n\nThe function parameters will be recognized as follows:\n\n* If the parameter is also declared in the path, it will be used as a path parameter.\n* If the parameter is of a singular type (like int, float, str, bool, etc) it will be interpreted as a query parameter.\n* If the parameter is declared to be of the type of a Pydantic model, it will be interpreted as a request",
+        "00/items/foo?short=on\n```\n\nor\n\n```\nhttp://127.0.0.1:8000/items/foo?short=yes\n```\n\nor any other case variation (uppercase, first letter in uppercase, etc), your function will see the parameter short with a bool value of True. Otherwise as False.\n\nMultiple path and query parameters\n\nYou can declare multiple path parameters and query parameters at the same time, FastAPI knows which is which.\n\nAnd you don't have to declare them in any specific order.\n\nThey will be detected by name:\n\nRequired query parameters\n\nWhen you declare a default value for non-path parameters (for now, we have only seen query parameters), then it is not required.\n\nIf you don't want to add a specific value but just make it optional, set the default as ",
+        "functions do.\n\nYou'll see what other \"things\", apart from functions, can be used as dependencies in the next chapter.\n\nWhenever a new request arrives, FastAPI will take care of:\n\n* Calling your dependency (\"dependable\") function with the correct parameters.\n* Get the result from your function.\n* Assign that result to the parameter in your path operation function.\n\n```mermaid\ngraph TB\n\ncommon_parameters([\"common_parameters\"])\nread_items[\"/items/\"]\nread_users[\"/users/\"]\n\ncommon_parameters --> read_items\ncommon_parameters --> read_users\n```\n\nThis way you write shared code once and FastAPI takes care of calling it for your path operations.\n\nNotice that you don't have to create a special class and pass it somewhere to FastAPI to \"register\" it or anything similar.\n\nYou just pass it to Depends an"
+      ],
+      "refused": false,
+      "refusal_reason": null,
+      "latency_seconds": 39.546,
+      "min_distance": 0.5007981061935425,
+      "llm_provider": "ollama",
+      "llm_model": "qwen2.5:3b",
+      "language_ok": true,
+      "source_ok": true,
+      "invalid_citations": []
+    },
+    {
+      "id": "path-params-fr",
+      "lang": "fr",
+      "topic": "path-params",
+      "trap": false,
+      "question": "Comment déclarer des paramètres de chemin dans FastAPI ?",
+      "reference": null,
+      "expected_sources": [
+        "tutorial/path-params.md"
+      ],
+      "error": null,
+      "answer": "Je n'ai pas trouvé d'information sur ce sujet dans la documentation.",
+      "sources": [],
+      "contexts": [],
+      "refused": true,
+      "refusal_reason": "low_relevance",
+      "latency_seconds": 0.0,
+      "min_distance": 1.1393330097198486,
+      "llm_provider": "ollama",
+      "llm_model": "qwen2.5:3b",
+      "language_ok": true,
+      "source_ok": false,
+      "invalid_citations": []
+    },
+    {
+      "id": "path-params-ar",
+      "lang": "ar",
+      "topic": "path-params",
+      "trap": false,
+      "question": "كيف أعرّف معاملات المسار (path parameters) في FastAPI؟",
+      "reference": null,
+      "expected_sources": [
+        "tutorial/path-params.md"
+      ],
+      "error": null,
+      "answer": "لم أجد معلومات حول هذا الموضوع في الوثائق.",
+      "sources": [],
+      "contexts": [],
+      "refused": true,
+      "refusal_reason": "low_relevance",
+      "latency_seconds": 0.0,
+      "min_distance": 1.0851824283599854,
+      "llm_provider": "ollama",
+      "llm_model": "qwen2.5:3b",
+      "language_ok": true,
+      "source_ok": false,
+      "invalid_citations": []
+    }
+  ],
+  "summary": {
+    "overall": {
+      "n": 6,
+      "n_errors": 0,
+      "language_ok_rate": 1.0,
+      "source_ok_rate": 0.3333333333333333,
+      "trap_refusal_rate": null,
+      "wrong_refusal_rate": 0.6666666666666666,
+      "invalid_citation_rate": 0.0,
+      "avg_latency_s": 41.538
+    },
+    "en": {
+      "n": 2,
+      "n_errors": 0,
+      "language_ok_rate": 1.0,
+      "source_ok_rate": 1.0,
+      "trap_refusal_rate": null,
+      "wrong_refusal_rate": 0.0,
+      "invalid_citation_rate": 0.0,
+      "avg_latency_s": 41.538
+    },
+    "fr": {
+      "n": 2,
+      "n_errors": 0,
+      "language_ok_rate": 1.0,
+      "source_ok_rate": 0.0,
+      "trap_refusal_rate": null,
+      "wrong_refusal_rate": 1.0,
+      "invalid_citation_rate": null,
+      "avg_latency_s": null
+    },
+    "ar": {
+      "n": 2,
+      "n_errors": 0,
+      "language_ok_rate": 1.0,
+      "source_ok_rate": 0.0,
+      "trap_refusal_rate": null,
+      "wrong_refusal_rate": 1.0,
+      "invalid_citation_rate": null,
+      "avg_latency_s": null
+    }
+  }
+}

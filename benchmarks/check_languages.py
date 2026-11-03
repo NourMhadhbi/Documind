@@ -14,6 +14,7 @@ français et arabe, et regarde si la bonne page est dans le top-k.
 
 from typing import Dict, List, Optional
 
+from benchmarks.metrics import rank_of_expected  # noqa: F401 (réexporté)
 from src.retrieval import retrieve, RetrievalError
 
 TOP_K = 5
@@ -56,14 +57,6 @@ QUESTIONS: List[Dict] = [
     {"lang": "ar", "query": "كيف أُرجع رمز حالة HTTP مخصصًا؟",
      "expected": ["tutorial/response-status-code.md"]},
 ]
-
-
-def rank_of_expected(sources: List[str], expected: List[str]) -> Optional[int]:
-    """Rang (à partir de 1) de la première source attendue, ou None si absente."""
-    for rank, source in enumerate(sources, start=1):
-        if source in expected:
-            return rank
-    return None
 
 
 def recall_by_language(rows: List[Dict]) -> Dict[str, float]:
