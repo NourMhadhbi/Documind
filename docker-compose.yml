@@ -1,0 +1,76 @@
+
+services:
+
+  # -----------------------------
+  # 1. API DOCUMIND
+  # -----------------------------
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+
+    container_name: documind-api
+
+    ports:
+      - "8000:8000"
+
+    env_file:
+      - .env
+
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      LLM_PROVIDER: ollama
+      OLLAMA_MODEL_NAME: qwen2.5:3b
+
+    volumes:
+      - ./data:/app/data
+      - huggingface_cache:/root/.cache/huggingface
+
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+    networks:
+      - documind-network
+
+    restart: unless-stopped
+
+  # -----------------------------
+  # 2. OLLAMA - LLM
+  # -----------------------------
+  ollama:
+    image: ollama/ollama:latest
+
+    container_name: documind-ollama
+
+    volumes:
+      - ollama_data:/root/.ollama
+
+    expose:
+      - "11434"
+
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+    networks:
+      - documind-network
+
+    restart: unless-stopped
+
+# -----------------------------
+# VOLUMES PERSISTANTS
+# -----------------------------
+volumes:
+  ollama_data:
+  huggingface_cache:
+
+# -----------------------------
+# RESEAU INTERNE
+# -----------------------------
+networks:
+  documind-network:
+    driver: bridge
