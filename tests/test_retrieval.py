@@ -7,11 +7,12 @@ indépendant du téléchargement d'un vrai modèle ou de l'existence d'un
 vrai index sur disque.
 """
 
-import numpy as np
-import pytest
 from unittest.mock import MagicMock, patch
 
-from src.retrieval import retrieve, RetrievalError, reset_cache
+import numpy as np
+import pytest
+
+from src.retrieval import RetrievalError, reset_cache, retrieve
 from src.vector_store import VectorStoreError
 
 
@@ -27,6 +28,7 @@ def clear_cache():
 # ---------------------------------------------------------------
 # Validation des entrées
 # ---------------------------------------------------------------
+
 
 def test_retrieve_empty_question_raises():
     with pytest.raises(RetrievalError, match="vide"):
@@ -54,17 +56,24 @@ def test_retrieve_negative_top_k_raises():
 # Comportement nominal (avec mocks)
 # ---------------------------------------------------------------
 
+
 def test_retrieve_returns_store_results():
     mock_model = MagicMock()
     mock_model.encode.return_value = np.array([[0.1, 0.2, 0.3]])
 
     mock_store = MagicMock()
     mock_store.query.return_value = [
-        {"text": "FastAPI route example", "source": "tutorial/first-steps.md", "score": 0.12},
+        {
+            "text": "FastAPI route example",
+            "source": "tutorial/first-steps.md",
+            "score": 0.12,
+        },
     ]
 
-    with patch("src.retrieval._get_model", return_value=mock_model), \
-         patch("src.retrieval._get_store", return_value=mock_store):
+    with (
+        patch("src.retrieval._get_model", return_value=mock_model),
+        patch("src.retrieval._get_store", return_value=mock_store),
+    ):
         results = retrieve("How to create a POST route?", top_k=3)
 
     assert len(results) == 1
@@ -83,8 +92,10 @@ def test_retrieve_normalizes_embeddings():
     mock_store = MagicMock()
     mock_store.query.return_value = []
 
-    with patch("src.retrieval._get_model", return_value=mock_model), \
-         patch("src.retrieval._get_store", return_value=mock_store):
+    with (
+        patch("src.retrieval._get_model", return_value=mock_model),
+        patch("src.retrieval._get_store", return_value=mock_store),
+    ):
         retrieve("Une question", top_k=5)
 
     call_kwargs = mock_model.encode.call_args.kwargs
@@ -99,8 +110,10 @@ def test_retrieve_empty_results_is_not_an_error():
     mock_store = MagicMock()
     mock_store.query.return_value = []
 
-    with patch("src.retrieval._get_model", return_value=mock_model), \
-         patch("src.retrieval._get_store", return_value=mock_store):
+    with (
+        patch("src.retrieval._get_model", return_value=mock_model),
+        patch("src.retrieval._get_store", return_value=mock_store),
+    ):
         results = retrieve("Question sans rapport avec le corpus", top_k=5)
 
     assert results == []
@@ -109,6 +122,7 @@ def test_retrieve_empty_results_is_not_an_error():
 # ---------------------------------------------------------------
 # Gestion d'erreurs
 # ---------------------------------------------------------------
+
 
 def test_retrieve_propagates_vector_store_error_as_retrieval_error():
     """Une VectorStoreError (erreur interne du Sprint 2) ne doit jamais
@@ -120,8 +134,10 @@ def test_retrieve_propagates_vector_store_error_as_retrieval_error():
     mock_store = MagicMock()
     mock_store.query.side_effect = VectorStoreError("panne simulée de l'index")
 
-    with patch("src.retrieval._get_model", return_value=mock_model), \
-         patch("src.retrieval._get_store", return_value=mock_store):
+    with (
+        patch("src.retrieval._get_model", return_value=mock_model),
+        patch("src.retrieval._get_store", return_value=mock_store),
+    ):
         with pytest.raises(RetrievalError, match="recherche"):
             retrieve("Une question valide", top_k=5)
 
@@ -133,8 +149,10 @@ def test_retrieve_wraps_encoding_failure():
     mock_model.encode.side_effect = RuntimeError("modèle corrompu simulé")
     mock_store = MagicMock()
 
-    with patch("src.retrieval._get_model", return_value=mock_model), \
-         patch("src.retrieval._get_store", return_value=mock_store):
+    with (
+        patch("src.retrieval._get_model", return_value=mock_model),
+        patch("src.retrieval._get_store", return_value=mock_store),
+    ):
         with pytest.raises(RetrievalError, match="encodage"):
             retrieve("Une question valide", top_k=5)
 
@@ -142,6 +160,7 @@ def test_retrieve_wraps_encoding_failure():
 # ---------------------------------------------------------------
 # Pattern singleton : le modèle ne doit être chargé qu'une seule fois
 # ---------------------------------------------------------------
+
 
 def test_model_is_loaded_only_once_across_multiple_calls():
     """Vérifie le bénéfice du pattern singleton : 2 appels à retrieve()

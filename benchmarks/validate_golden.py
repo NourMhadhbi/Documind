@@ -89,16 +89,27 @@ def coverage_report(data: Dict) -> Dict:
             per_lang[lang] += 1
             langs_by_topic.setdefault(q.get("topic", "?"), set()).add(lang)
     incomplete = {t: sorted(LANGS - langs) for t, langs in langs_by_topic.items() if langs != LANGS}
-    return {"per_lang": per_lang, "traps_per_lang": traps_per_lang,
-            "topics": len(langs_by_topic), "incomplete_topics": incomplete}
+    return {
+        "per_lang": per_lang,
+        "traps_per_lang": traps_per_lang,
+        "topics": len(langs_by_topic),
+        "incomplete_topics": incomplete,
+    }
 
 
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--path", default=DEFAULT_PATH)
     parser.add_argument("--data-dir", default="data/raw")
-    parser.add_argument("--min", type=int, default=30, help="nombre de questions visé (avertissement seulement)")
+    parser.add_argument(
+        "--min",
+        type=int,
+        default=30,
+        help="nombre de questions visé (avertissement seulement)",
+    )
     args = parser.parse_args()
 
     data = load_golden(args.path)
@@ -107,8 +118,10 @@ def main() -> int:
         if Path(args.data_dir).is_dir():
             errors += check_sources_exist(data, args.data_dir)
         else:
-            print(f"AVERTISSEMENT : {args.data_dir} introuvable, existence des sources non vérifiée "
-                  "(lance `dvc pull` ou ajuste --data-dir).")
+            print(
+                f"AVERTISSEMENT : {args.data_dir} introuvable, existence des sources non vérifiée "
+                "(lance `dvc pull` ou ajuste --data-dir)."
+            )
 
     total = len(data.get("questions", []))
     report = coverage_report(data) if not errors or total else {}
@@ -119,7 +132,9 @@ def main() -> int:
         for topic, missing in report["incomplete_topics"].items():
             print(f"  AVERTISSEMENT : sujet '{topic}' sans langue(s) {missing}")
     if total < args.min:
-        print(f"  AVERTISSEMENT : {total} questions, objectif {args.min} (ajoute des sujets lus dans la doc).")
+        print(
+            f"  AVERTISSEMENT : {total} questions, objectif {args.min} (ajoute des sujets lus dans la doc)."
+        )
 
     if errors:
         print("\nERREURS :")

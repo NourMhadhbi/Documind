@@ -1,4 +1,3 @@
-
 """
 API REST de DocuMind — Sprint 6.
 
@@ -15,7 +14,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from config import settings
-from src.generation import generate_answer, GenerationError
+from src.generation import GenerationError, generate_answer
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +33,7 @@ GENERATION_TIMEOUT = 180
 # --------------------------------------------------
 # Modèles de requête et de réponse
 # --------------------------------------------------
+
 
 class ChatRequest(BaseModel):
     question: str = Field(
@@ -65,6 +65,7 @@ class ErrorResponse(BaseModel):
 # Vérification de l'index
 # --------------------------------------------------
 
+
 def index_is_available() -> bool:
     """
     Vérifie le chemin d'index configuré dans config.py.
@@ -84,6 +85,7 @@ def index_is_available() -> bool:
 # --------------------------------------------------
 # Routes de santé
 # --------------------------------------------------
+
 
 @app.get("/", tags=["Health"])
 async def root():
@@ -106,13 +108,17 @@ async def health():
 # Endpoint RAG
 # --------------------------------------------------
 
+
 @app.post(
     "/chat",
     response_model=ChatResponse,
     tags=["Chat"],
     responses={
         422: {"model": ErrorResponse, "description": "Question invalide"},
-        503: {"model": ErrorResponse, "description": "Index ou fournisseur indisponible"},
+        503: {
+            "model": ErrorResponse,
+            "description": "Index ou fournisseur indisponible",
+        },
         504: {"model": ErrorResponse, "description": "Délai de génération dépassé"},
         500: {"model": ErrorResponse, "description": "Erreur interne"},
     },

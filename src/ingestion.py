@@ -25,10 +25,10 @@ from pathlib import Path
 from typing import Dict, List
 
 # --- Éléments propres à MkDocs / FastAPI ---------------------------------
-RE_INCLUDE_DIRECTIVE = re.compile(r"\{\*.*?\*\}")            # {* ../../docs_src/x.py hl[1] *}
+RE_INCLUDE_DIRECTIVE = re.compile(r"\{\*.*?\*\}")  # {* ../../docs_src/x.py hl[1] *}
 RE_HEADING_ANCHOR = re.compile(r"[ \t]*\{[ \t]*#[\w\-.:]+[ \t]*\}")  # { #first-steps }
-RE_ADMONITION_SLASHES = re.compile(r"^[ \t]*///.*$", re.MULTILINE)   # /// tip ... ///
-RE_ADMONITION_BANGS = re.compile(r"^!!!.*$", re.MULTILINE)           # !!! note
+RE_ADMONITION_SLASHES = re.compile(r"^[ \t]*///.*$", re.MULTILINE)  # /// tip ... ///
+RE_ADMONITION_BANGS = re.compile(r"^!!!.*$", re.MULTILINE)  # !!! note
 
 # --- Code à protéger -------------------------------------------------------
 RE_CODE_BLOCK = re.compile(r"```.*?```", re.DOTALL)
@@ -105,12 +105,12 @@ def clean_text(text: str, keep_code_blocks: bool = False, strip_anchors: bool = 
             if not keep_code_blocks:
                 return " "
             return RE_HTML_TAG.sub("", original)  # balises <span> des sorties console
-        return original.strip("`")                # code en ligne : garder le contenu
+        return original.strip("`")  # code en ligne : garder le contenu
 
     text = RE_PLACEHOLDER.sub(_restore, text)
 
     # 5. Finitions.
-    text = html.unescape(text)                    # &apos; -> '
+    text = html.unescape(text)  # &apos; -> '
     text = RE_MULTI_BLANK_LINES.sub("\n\n", text)
     return text.strip()
 
@@ -134,13 +134,17 @@ def chunk_text(text: str, chunk_size: int = 500, chunk_overlap: int = 50) -> Lis
     chunks = []
     i = 0
     while i < len(text):
-        chunks.append(text[i:i + chunk_size])
+        chunks.append(text[i : i + chunk_size])
         i += chunk_size - chunk_overlap
     return chunks
 
 
-def build_chunks(documents: List[Dict], chunk_size: int, chunk_overlap: int,
-                 keep_code_blocks: bool = False) -> List[Dict]:
+def build_chunks(
+    documents: List[Dict],
+    chunk_size: int,
+    chunk_overlap: int,
+    keep_code_blocks: bool = False,
+) -> List[Dict]:
     """Nettoie puis découpe chaque document ; garde la source de chaque chunk."""
     chunks = []
     for doc in documents:

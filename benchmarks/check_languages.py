@@ -12,50 +12,95 @@ français et arabe, et regarde si la bonne page est dans le top-k.
     python -m benchmarks.check_languages
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from benchmarks.metrics import rank_of_expected  # noqa: F401 (réexporté)
-from src.retrieval import retrieve, RetrievalError
+from src.retrieval import RetrievalError, retrieve
 
 TOP_K = 5
 
 # Les 5 sujets du benchmark du Sprint 2, chacun dans trois langues (15 questions).
 QUESTIONS: List[Dict] = [
     # 1. Route POST
-    {"lang": "en", "query": "How do I create a POST route in FastAPI?",
-     "expected": ["tutorial/first-steps.md", "tutorial/body.md"]},
-    {"lang": "fr", "query": "Comment créer une route POST dans FastAPI ?",
-     "expected": ["tutorial/first-steps.md", "tutorial/body.md"]},
-    {"lang": "ar", "query": "كيف أنشئ مسار POST في FastAPI؟",
-     "expected": ["tutorial/first-steps.md", "tutorial/body.md"]},
+    {
+        "lang": "en",
+        "query": "How do I create a POST route in FastAPI?",
+        "expected": ["tutorial/first-steps.md", "tutorial/body.md"],
+    },
+    {
+        "lang": "fr",
+        "query": "Comment créer une route POST dans FastAPI ?",
+        "expected": ["tutorial/first-steps.md", "tutorial/body.md"],
+    },
+    {
+        "lang": "ar",
+        "query": "كيف أنشئ مسار POST في FastAPI؟",
+        "expected": ["tutorial/first-steps.md", "tutorial/body.md"],
+    },
     # 2. Paramètres de chemin
-    {"lang": "en", "query": "How to declare path parameters in FastAPI?",
-     "expected": ["tutorial/path-params.md"]},
-    {"lang": "fr", "query": "Comment déclarer des paramètres de chemin dans FastAPI ?",
-     "expected": ["tutorial/path-params.md"]},
-    {"lang": "ar", "query": "كيف أعرّف معاملات المسار (path parameters) في FastAPI؟",
-     "expected": ["tutorial/path-params.md"]},
+    {
+        "lang": "en",
+        "query": "How to declare path parameters in FastAPI?",
+        "expected": ["tutorial/path-params.md"],
+    },
+    {
+        "lang": "fr",
+        "query": "Comment déclarer des paramètres de chemin dans FastAPI ?",
+        "expected": ["tutorial/path-params.md"],
+    },
+    {
+        "lang": "ar",
+        "query": "كيف أعرّف معاملات المسار (path parameters) في FastAPI؟",
+        "expected": ["tutorial/path-params.md"],
+    },
     # 3. Validation du corps de requête
-    {"lang": "en", "query": "How to validate request body with Pydantic?",
-     "expected": ["tutorial/body.md"]},
-    {"lang": "fr", "query": "Comment valider le corps d'une requête avec Pydantic ?",
-     "expected": ["tutorial/body.md"]},
-    {"lang": "ar", "query": "كيف أتحقق من صحة جسم الطلب باستخدام Pydantic؟",
-     "expected": ["tutorial/body.md"]},
+    {
+        "lang": "en",
+        "query": "How to validate request body with Pydantic?",
+        "expected": ["tutorial/body.md"],
+    },
+    {
+        "lang": "fr",
+        "query": "Comment valider le corps d'une requête avec Pydantic ?",
+        "expected": ["tutorial/body.md"],
+    },
+    {
+        "lang": "ar",
+        "query": "كيف أتحقق من صحة جسم الطلب باستخدام Pydantic؟",
+        "expected": ["tutorial/body.md"],
+    },
     # 4. Injection de dépendances
-    {"lang": "en", "query": "What is dependency injection in FastAPI?",
-     "expected": ["tutorial/dependencies/index.md"]},
-    {"lang": "fr", "query": "Qu'est-ce que l'injection de dépendances dans FastAPI ?",
-     "expected": ["tutorial/dependencies/index.md"]},
-    {"lang": "ar", "query": "ما هو حقن التبعيات (dependency injection) في FastAPI؟",
-     "expected": ["tutorial/dependencies/index.md"]},
+    {
+        "lang": "en",
+        "query": "What is dependency injection in FastAPI?",
+        "expected": ["tutorial/dependencies/index.md"],
+    },
+    {
+        "lang": "fr",
+        "query": "Qu'est-ce que l'injection de dépendances dans FastAPI ?",
+        "expected": ["tutorial/dependencies/index.md"],
+    },
+    {
+        "lang": "ar",
+        "query": "ما هو حقن التبعيات (dependency injection) في FastAPI؟",
+        "expected": ["tutorial/dependencies/index.md"],
+    },
     # 5. Code de statut HTTP
-    {"lang": "en", "query": "How to return a custom HTTP status code?",
-     "expected": ["tutorial/response-status-code.md"]},
-    {"lang": "fr", "query": "Comment retourner un code de statut HTTP personnalisé ?",
-     "expected": ["tutorial/response-status-code.md"]},
-    {"lang": "ar", "query": "كيف أُرجع رمز حالة HTTP مخصصًا؟",
-     "expected": ["tutorial/response-status-code.md"]},
+    {
+        "lang": "en",
+        "query": "How to return a custom HTTP status code?",
+        "expected": ["tutorial/response-status-code.md"],
+    },
+    {
+        "lang": "fr",
+        "query": "Comment retourner un code de statut HTTP personnalisé ?",
+        "expected": ["tutorial/response-status-code.md"],
+    },
+    {
+        "lang": "ar",
+        "query": "كيف أُرجع رمز حالة HTTP مخصصًا؟",
+        "expected": ["tutorial/response-status-code.md"],
+    },
 ]
 
 

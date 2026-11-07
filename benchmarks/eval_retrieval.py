@@ -42,9 +42,17 @@ def run_retrieval(questions: List[Dict], retrieve_fn: Callable, top_k: int) -> L
     """Une ligne par question. Une panne sur une question est enregistrée, pas fatale."""
     rows = []
     for q in questions:
-        row = {"id": q["id"], "lang": q["lang"], "topic": q["topic"], "trap": q["trap"],
-               "question": q["question"], "rank": None, "top1_distance": None,
-               "sources": [], "error": None}
+        row = {
+            "id": q["id"],
+            "lang": q["lang"],
+            "topic": q["topic"],
+            "trap": q["trap"],
+            "question": q["question"],
+            "rank": None,
+            "top1_distance": None,
+            "sources": [],
+            "error": None,
+        }
         try:
             chunks = retrieve_fn(q["question"], top_k)
         except Exception as exc:  # noqa: BLE001 : on veut continuer l'évaluation
@@ -69,19 +77,25 @@ def tracking_metrics(summary: Dict, n_errors: int) -> Dict[str, float]:
 
 
 def mean_distance(rows: List[Dict], trap: bool):
-    values = [r["top1_distance"] for r in rows if r["trap"] == trap and r["top1_distance"] is not None]
+    values = [
+        r["top1_distance"] for r in rows if r["trap"] == trap and r["top1_distance"] is not None
+    ]
     return sum(values) / len(values) if values else None
 
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--golden", default=DEFAULT_GOLDEN)
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--run-name", default="default")
     parser.add_argument("--note", default="", help="texte libre enregistré avec le run")
     parser.add_argument("--output", default=None)
-    parser.add_argument("--mlflow", action="store_true", help="journalise le run dans MLflow/DagsHub")
+    parser.add_argument(
+        "--mlflow", action="store_true", help="journalise le run dans MLflow/DagsHub"
+    )
     args = parser.parse_args()
 
     from config import settings
@@ -93,15 +107,22 @@ def main() -> None:
     n_errors = sum(1 for r in rows if r["error"])
 
     meta = {
-        "run_name": args.run_name, "note": args.note, "top_k": args.top_k, "golden": args.golden,
-        "embedding_model": settings.embedding_model_name, "index_path": settings.index_path,
-        "collection": settings.vector_collection_name, "n_questions": len(questions),
+        "run_name": args.run_name,
+        "note": args.note,
+        "top_k": args.top_k,
+        "golden": args.golden,
+        "embedding_model": settings.embedding_model_name,
+        "index_path": settings.index_path,
+        "collection": settings.vector_collection_name,
+        "n_questions": len(questions),
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     output = args.output or f"{RESULTS_DIR}/retrieval_{args.run_name}.json"
     write_json_atomic(output, {"meta": meta, "rows": rows, "summary": summary})
 
-    print(f"\nRetrieval | modèle : {meta['embedding_model']} | index : {meta['index_path']} | top-{args.top_k}")
+    print(
+        f"\nRetrieval | modèle : {meta['embedding_model']} | index : {meta['index_path']} | top-{args.top_k}"
+    )
     print(f"{'Langue':<10}{'n':<5}{'Recall@k':<11}{'MRR@k':<8}")
     for lang in sorted(summary, key=lambda name: (name == "overall", name)):
         v = summary[lang]
@@ -110,15 +131,24 @@ def main() -> None:
     print(f"\nQuestions dont la bonne page est absente du top-{args.top_k} : {misses or 'aucune'}")
     d_normal, d_trap = mean_distance(rows, False), mean_distance(rows, True)
     if d_normal is not None and d_trap is not None:
-        print(f"Distance moyenne du meilleur chunk : questions normales {d_normal:.3f} | pièges {d_trap:.3f}")
+        print(
+            f"Distance moyenne du meilleur chunk : questions normales {d_normal:.3f} | pièges {d_trap:.3f}"
+        )
     if n_errors:
         print(f"ATTENTION : {n_errors} question(s) en erreur (voir le fichier de résultats).")
     print(f"Résultats : {output}")
 
     if args.mlflow:
         from benchmarks.tracking import log_run
+
         params = {k: v for k, v in meta.items() if k not in ("created_at",)}
-        log_run("retrieval_eval", args.run_name, params, tracking_metrics(summary, n_errors), artifacts=[output])
+        log_run(
+            "retrieval_eval",
+            args.run_name,
+            params,
+            tracking_metrics(summary, n_errors),
+            artifacts=[output],
+        )
         print("Run journalisé dans MLflow.")
 
 

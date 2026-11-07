@@ -1,7 +1,9 @@
 """Garde-fou : .env.example doit rester synchronisé avec config.py.
 Évite l'erreur 'Extra inputs are not permitted' rencontrée au Sprint 2
 quand le .env contenait des variables absentes de la classe Settings."""
+
 from pathlib import Path
+
 from config import Settings
 
 
