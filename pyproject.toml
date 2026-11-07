@@ -1,6 +1,6 @@
-[tool.ruff]
+﻿[tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py313"
 extend-exclude = [".venv", "benchmarks/results"]
 
 [tool.ruff.lint]
