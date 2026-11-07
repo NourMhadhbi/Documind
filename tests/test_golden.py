@@ -1,18 +1,28 @@
 """Tests du validateur de jeu de référence, et du jeu livré lui-même."""
+
 from pathlib import Path
 
 import pytest
 
 from benchmarks.validate_golden import (
-    LANGS, check_sources_exist, coverage_report, load_golden, validate_schema,
+    check_sources_exist,
+    coverage_report,
+    load_golden,
+    validate_schema,
 )
 
 GOLDEN_PATH = Path(__file__).parent / "golden_qa.json"
 
 
 def _q(**overrides):
-    base = {"id": "t-en", "topic": "t", "lang": "en", "question": "Q ?",
-            "expected_sources": ["a.md"], "trap": False}
+    base = {
+        "id": "t-en",
+        "topic": "t",
+        "lang": "en",
+        "question": "Q ?",
+        "expected_sources": ["a.md"],
+        "trap": False,
+    }
     base.update(overrides)
     return base
 
@@ -64,15 +74,22 @@ def test_check_sources_exist_flags_missing_files(tmp_path):
 
 
 def test_coverage_report_detects_topic_missing_a_language():
-    data = {"questions": [_q(id="x-en", topic="x", lang="en"), _q(id="x-fr", topic="x", lang="fr"),
-                          _q(id="y-en", topic="y", lang="en"), _q(id="y-fr", topic="y", lang="fr"),
-                          _q(id="y-ar", topic="y", lang="ar")]}
+    data = {
+        "questions": [
+            _q(id="x-en", topic="x", lang="en"),
+            _q(id="x-fr", topic="x", lang="fr"),
+            _q(id="y-en", topic="y", lang="en"),
+            _q(id="y-fr", topic="y", lang="fr"),
+            _q(id="y-ar", topic="y", lang="ar"),
+        ]
+    }
     report = coverage_report(data)
     assert report["incomplete_topics"] == {"x": ["ar"]}
     assert report["per_lang"] == {"ar": 1, "en": 2, "fr": 2}
 
 
 # ---- Le jeu livré -----------------------------------------------------------
+
 
 def test_shipped_golden_file_is_structurally_valid():
     assert validate_schema(load_golden(str(GOLDEN_PATH))) == []
@@ -81,7 +98,7 @@ def test_shipped_golden_file_is_structurally_valid():
 def test_shipped_golden_file_covers_every_language_evenly():
     report = coverage_report(load_golden(str(GOLDEN_PATH)))
     assert report["incomplete_topics"] == {}
-    assert len(set(report["per_lang"].values())) == 1            # même nombre par langue
+    assert len(set(report["per_lang"].values())) == 1  # même nombre par langue
     assert all(n >= 1 for n in report["traps_per_lang"].values())  # au moins un piège par langue
 
 

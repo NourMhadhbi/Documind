@@ -7,19 +7,20 @@ pour produire une réponse sourcée.
 import logging
 import re
 import time
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 from config import settings
 from src.ingestion import RE_HEADING_ANCHOR
 from src.language import REFUSAL_MESSAGES, detect_language
-from src.retrieval import retrieve, RetrievalError
-from src.llm_provider import get_llm_provider, LLMProviderError
+from src.llm_provider import LLMProviderError, get_llm_provider
+from src.retrieval import RetrievalError, retrieve
 
 logger = logging.getLogger(__name__)
 
 
 class GenerationError(Exception):
     """Erreur métier de la génération."""
+
     pass
 
 
@@ -46,7 +47,7 @@ def _deduplicate_by_source(chunks: List[Dict], max_per_source: int = 1) -> List[
 
 
 # Plages Unicode de l'écriture arabe (lettres, formes de présentation).
-_ARABIC_SCRIPT = re.compile("[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]")
+_ARABIC_SCRIPT = re.compile("[\u0600-\u06ff\u0750-\u077f\ufb50-\ufdff\ufe70-\ufeff]")
 
 
 def detect_language_hint(question: str) -> Optional[str]:
@@ -144,10 +145,16 @@ def generate_answer(question: str, top_k: Optional[int] = None) -> Dict:
         logger.warning("Aucun chunk pertinent pour la question : '%s'", question)
         return _refusal(question, "no_chunks", min_distance)
 
-    if (settings.max_distance is not None and min_distance is not None
-            and min_distance > settings.max_distance):
-        logger.info("Garde-fou : distance %.3f > seuil %.3f, pas d'appel au LLM",
-                    min_distance, settings.max_distance)
+    if (
+        settings.max_distance is not None
+        and min_distance is not None
+        and min_distance > settings.max_distance
+    ):
+        logger.info(
+            "Garde-fou : distance %.3f > seuil %.3f, pas d'appel au LLM",
+            min_distance,
+            settings.max_distance,
+        )
         return _refusal(question, "low_relevance", min_distance)
 
     prompt = build_prompt(question, chunks)

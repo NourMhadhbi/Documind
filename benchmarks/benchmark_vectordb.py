@@ -1,20 +1,21 @@
 import json
-import time
 import logging
-from typing import List, Dict
-import mlflow
 import os
-from dotenv import load_dotenv
 import sys
+import time
+from typing import Dict, List
 
+import mlflow
+from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
+
 load_dotenv()
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 os.environ["MLFLOW_TRACKING_USERNAME"] = os.getenv("MLFLOW_TRACKING_USERNAME")
 os.environ["MLFLOW_TRACKING_PASSWORD"] = os.getenv("MLFLOW_TRACKING_PASSWORD")
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
-mlflow.set_experiment("vector_db_benchmark") 
+mlflow.set_experiment("vector_db_benchmark")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -79,6 +80,7 @@ def encode_chunks(chunks: List[Dict], model: SentenceTransformer):
 # Métriques de QUALITÉ du retrieval
 # ================================================================
 
+
 def recall_at_k(retrieved_sources: List[str], expected_sources: List[str]) -> float:
     """1.0 si au moins une source attendue apparaît parmi les résultats
     retournés, sinon 0.0."""
@@ -94,8 +96,13 @@ def reciprocal_rank(retrieved_sources: List[str], expected_sources: List[str]) -
     return 0.0
 
 
-def evaluate_quality(backend_name: str, query_fn, model: SentenceTransformer,
-                      queries: List[Dict], top_k: int) -> Dict:
+def evaluate_quality(
+    backend_name: str,
+    query_fn,
+    model: SentenceTransformer,
+    queries: List[Dict],
+    top_k: int,
+) -> Dict:
     """
     Exécute toutes les BENCHMARK_QUERIES sur un backend donné et calcule
     Recall@k et MRR moyens.
@@ -121,15 +128,24 @@ def evaluate_quality(backend_name: str, query_fn, model: SentenceTransformer,
         recalls.append(r)
         rr_scores.append(rr)
 
-        details.append({
-            "query": query_text,
-            "expected": expected,
-            "retrieved": retrieved_sources,
-            "recall": r,
-            "reciprocal_rank": rr,
-        })
-        logger.info("[%s] '%s' -> recall=%.1f, RR=%.2f | attendu=%s | trouvé=%s",
-                     backend_name, query_text, r, rr, expected, retrieved_sources)
+        details.append(
+            {
+                "query": query_text,
+                "expected": expected,
+                "retrieved": retrieved_sources,
+                "recall": r,
+                "reciprocal_rank": rr,
+            }
+        )
+        logger.info(
+            "[%s] '%s' -> recall=%.1f, RR=%.2f | attendu=%s | trouvé=%s",
+            backend_name,
+            query_text,
+            r,
+            rr,
+            expected,
+            retrieved_sources,
+        )
 
     return {
         "mean_recall_at_k": sum(recalls) / len(recalls),
@@ -142,6 +158,7 @@ def evaluate_quality(backend_name: str, query_fn, model: SentenceTransformer,
 # Backends : chacun construit son index, définit son propre query_fn
 # (adaptateur), et mesure temps d'indexation + latence + qualité.
 # ================================================================
+
 
 def benchmark_chromadb(chunks, embeddings, texts, ids, sources, model) -> Dict:
     import chromadb
@@ -216,7 +233,7 @@ def benchmark_faiss(chunks, embeddings, texts, ids, sources, model) -> Dict:
 
 def benchmark_qdrant(chunks, embeddings, texts, ids, sources, model) -> Dict:
     from qdrant_client import QdrantClient
-    from qdrant_client.models import Distance, VectorParams, PointStruct
+    from qdrant_client.models import Distance, PointStruct, VectorParams
 
     client = QdrantClient(":memory:")
     collection_name = "bench_qdrant"
@@ -259,6 +276,7 @@ def benchmark_qdrant(chunks, embeddings, texts, ids, sources, model) -> Dict:
         "quality": quality,
     }
 
+
 def print_failures(results: Dict[str, Dict]) -> None:
     """Affiche les questions dont la bonne source n'a pas été trouvée."""
     print("\n" + "=" * 90)
@@ -271,6 +289,7 @@ def print_failures(results: Dict[str, Dict]) -> None:
             print(f"  Attendu : {d['expected']}")
             print(f"  Trouvé  : {sorted(set(d['retrieved']))}")
 
+
 def print_comparison(results: Dict[str, Dict]) -> None:
     print("\n" + "=" * 90)
     print("COMPARAISON DES BASES VECTORIELLES — PERFORMANCE ET QUALITÉ")
@@ -279,11 +298,14 @@ def print_comparison(results: Dict[str, Dict]) -> None:
     print(header)
     print("-" * 90)
     for name, r in results.items():
-        print(f"{name:<12}{r['index_time']:<12.3f}"
-              f"{r['avg_query_latency']*1000:<15.2f}"
-              f"{r['quality']['mean_recall_at_k']:<12.2f}"
-              f"{r['quality']['mean_reciprocal_rank']:<10.2f}")
+        print(
+            f"{name:<12}{r['index_time']:<12.3f}"
+            f"{r['avg_query_latency'] * 1000:<15.2f}"
+            f"{r['quality']['mean_recall_at_k']:<12.2f}"
+            f"{r['quality']['mean_reciprocal_rank']:<10.2f}"
+        )
     print("\nRappel : Recall@k et MRR proches de 1.0 = meilleure qualité de retrieval.")
+
 
 def log_to_mlflow(backend_name: str, results: Dict) -> None:
     with mlflow.start_run(run_name=f"benchmark_{backend_name.lower()}"):
@@ -295,6 +317,7 @@ def log_to_mlflow(backend_name: str, results: Dict) -> None:
         mlflow.log_metric("avg_query_latency_ms", results["avg_query_latency"] * 1000)
         mlflow.log_metric("mean_recall_at_k", results["quality"]["mean_recall_at_k"])
         mlflow.log_metric("mean_reciprocal_rank", results["quality"]["mean_reciprocal_rank"])
+
 
 if __name__ == "__main__":
     model = SentenceTransformer(EMBEDDING_MODEL_NAME)
@@ -312,7 +335,7 @@ if __name__ == "__main__":
 
     print_comparison(results)
     print_failures(results)
- #  on logge chaque backend comme une run séparée
+    #  on logge chaque backend comme une run séparée
     for backend_name, backend_results in results.items():
         log_to_mlflow(backend_name, backend_results)
         logger.info("Résultats de %s loggés dans MLflow", backend_name)

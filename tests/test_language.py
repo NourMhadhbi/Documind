@@ -1,18 +1,25 @@
 import pytest
+
 from src.language import (
-    REFUSAL_MESSAGES, answer_language_matches, detect_language, strip_code,
+    REFUSAL_MESSAGES,
+    answer_language_matches,
+    detect_language,
+    strip_code,
 )
 
 
-@pytest.mark.parametrize("text, expected", [
-    ("How to declare path parameters in FastAPI?", "en"),
-    ("What is the recipe for a chocolate cake?", "en"),
-    ("Comment déclarer des paramètres de chemin dans FastAPI ?", "fr"),
-    ("Qu'est-ce que l'injection de dépendances dans FastAPI ?", "fr"),
-    ("Quelle est la recette du gâteau au chocolat ?", "fr"),
-    ("كيف أعرّف معاملات المسار (path parameters) في FastAPI؟", "ar"),
-    ("ما هو حقن التبعيات (dependency injection) في FastAPI؟", "ar"),
-])
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("How to declare path parameters in FastAPI?", "en"),
+        ("What is the recipe for a chocolate cake?", "en"),
+        ("Comment déclarer des paramètres de chemin dans FastAPI ?", "fr"),
+        ("Qu'est-ce que l'injection de dépendances dans FastAPI ?", "fr"),
+        ("Quelle est la recette du gâteau au chocolat ?", "fr"),
+        ("كيف أعرّف معاملات المسار (path parameters) في FastAPI؟", "ar"),
+        ("ما هو حقن التبعيات (dependency injection) في FastAPI؟", "ar"),
+    ],
+)
 def test_detect_language(text, expected):
     assert detect_language(text) == expected
 

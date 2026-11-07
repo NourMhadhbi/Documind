@@ -1,6 +1,10 @@
 from benchmarks.metrics import (
-    aggregate_retrieval, cited_markdown_files, invalid_citations, looks_like_refusal,
-    rank_of_expected, reciprocal_rank,
+    aggregate_retrieval,
+    cited_markdown_files,
+    invalid_citations,
+    looks_like_refusal,
+    rank_of_expected,
+    reciprocal_rank,
 )
 
 
@@ -18,8 +22,10 @@ def test_reciprocal_rank_respects_k():
 
 def test_aggregate_retrieval_ignores_traps_and_errors():
     rows = [
-        {"lang": "en", "rank": 1, "trap": False}, {"lang": "en", "rank": None, "trap": False},
-        {"lang": "ar", "rank": 3, "trap": False}, {"lang": "ar", "rank": None, "trap": True},
+        {"lang": "en", "rank": 1, "trap": False},
+        {"lang": "en", "rank": None, "trap": False},
+        {"lang": "ar", "rank": 3, "trap": False},
+        {"lang": "ar", "rank": None, "trap": True},
         {"lang": "ar", "rank": None, "trap": False, "error": "boom"},
     ]
     s = aggregate_retrieval(rows, k=5)
@@ -37,7 +43,10 @@ def test_looks_like_refusal_in_three_languages():
 
 def test_cited_markdown_files_unique_and_ordered():
     answer = "Voir [dependencies-with-yield.md] et `./tutorial/body.md`, puis dependencies-with-yield.md."
-    assert cited_markdown_files(answer) == ["dependencies-with-yield.md", "tutorial/body.md"]
+    assert cited_markdown_files(answer) == [
+        "dependencies-with-yield.md",
+        "tutorial/body.md",
+    ]
 
 
 def test_invalid_citations_accepts_suffix_matches():

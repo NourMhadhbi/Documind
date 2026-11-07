@@ -29,9 +29,10 @@ La solution : deux variables de module (`_model`, `_store`) servent de cache. Au
 ```python
 _model: Optional[SentenceTransformer] = None  # cache, vide au démarrage
 
+
 def _get_model() -> SentenceTransformer:
     global _model
-    if _model is None:          # chargé seulement si pas déjà en cache
+    if _model is None:  # chargé seulement si pas déjà en cache
         _model = SentenceTransformer(...)
     return _model
 ```

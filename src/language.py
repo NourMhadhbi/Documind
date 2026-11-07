@@ -13,25 +13,111 @@ mélangés peuvent être mal classés, et toute autre langue est rangée en « e
 import re
 from typing import Optional
 
-ARABIC_RE = re.compile("[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]")
-LATIN_RE = re.compile("[A-Za-z\u00C0-\u00FF]")
+ARABIC_RE = re.compile("[\u0600-\u06ff\u0750-\u077f\ufb50-\ufdff\ufe70-\ufeff]")
+LATIN_RE = re.compile("[A-Za-z\u00c0-\u00ff]")
 FRENCH_ACCENT_RE = re.compile("[àâçéèêëîïôùûüÿœæ]", re.IGNORECASE)
 WORD_RE = re.compile("[a-zà-ÿœæ]+")
 
 # Mots-outils discriminants. Les mots ambigus entre les deux langues
 # (on, as, an, or, a) sont volontairement exclus.
-FRENCH_WORDS = frozenset({
-    "le", "la", "les", "des", "du", "de", "un", "une", "est", "et", "dans", "pour",
-    "comment", "que", "qui", "quoi", "quel", "quelle", "quels", "quelles", "avec", "sur",
-    "pas", "au", "aux", "ce", "cette", "ces", "vous", "je", "tu", "il", "elle", "nous",
-    "sont", "peut", "faire", "ou", "par", "plus", "si", "mon", "ma", "mes", "votre",
-    "ne", "se", "sa", "son", "ses", "qu", "l", "j", "où", "trouvé", "information",
-})
-ENGLISH_WORDS = frozenset({
-    "the", "of", "and", "to", "in", "is", "how", "what", "with", "for", "are", "can",
-    "you", "your", "this", "that", "do", "does", "use", "using", "which", "when", "why",
-    "it", "be", "by", "from", "have", "has", "not", "could", "find", "there", "an",
-})
+FRENCH_WORDS = frozenset(
+    {
+        "le",
+        "la",
+        "les",
+        "des",
+        "du",
+        "de",
+        "un",
+        "une",
+        "est",
+        "et",
+        "dans",
+        "pour",
+        "comment",
+        "que",
+        "qui",
+        "quoi",
+        "quel",
+        "quelle",
+        "quels",
+        "quelles",
+        "avec",
+        "sur",
+        "pas",
+        "au",
+        "aux",
+        "ce",
+        "cette",
+        "ces",
+        "vous",
+        "je",
+        "tu",
+        "il",
+        "elle",
+        "nous",
+        "sont",
+        "peut",
+        "faire",
+        "ou",
+        "par",
+        "plus",
+        "si",
+        "mon",
+        "ma",
+        "mes",
+        "votre",
+        "ne",
+        "se",
+        "sa",
+        "son",
+        "ses",
+        "qu",
+        "l",
+        "j",
+        "où",
+        "trouvé",
+        "information",
+    }
+)
+ENGLISH_WORDS = frozenset(
+    {
+        "the",
+        "of",
+        "and",
+        "to",
+        "in",
+        "is",
+        "how",
+        "what",
+        "with",
+        "for",
+        "are",
+        "can",
+        "you",
+        "your",
+        "this",
+        "that",
+        "do",
+        "does",
+        "use",
+        "using",
+        "which",
+        "when",
+        "why",
+        "it",
+        "be",
+        "by",
+        "from",
+        "have",
+        "has",
+        "not",
+        "could",
+        "find",
+        "there",
+        "an",
+    }
+)
 # « information » est commun aux deux langues : on le retire des deux listes.
 FRENCH_WORDS = FRENCH_WORDS - {"information"}
 ENGLISH_WORDS = ENGLISH_WORDS - {"an"}

@@ -4,25 +4,25 @@ réseau (Anthropic SDK, requests pour Ollama) : jamais d'appel réel,
 jamais de coût, jamais de dépendance à un serveur Ollama lancé.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from src.llm_provider import (
     AnthropicProvider,
+    LLMProviderError,
     OllamaProvider,
     get_llm_provider,
-    LLMProviderError,
 )
-
 
 # ---------------------------------------------------------------
 # AnthropicProvider
 # ---------------------------------------------------------------
 
+
 def test_anthropic_provider_requires_api_key():
     with pytest.raises(LLMProviderError, match="api_key"):
-        AnthropicProvider(api_key="", model_name="claude-sonnet-5",
-                           max_tokens=100, temperature=0.0)
+        AnthropicProvider(api_key="", model_name="claude-sonnet-5", max_tokens=100, temperature=0.0)
 
 
 def test_anthropic_provider_complete_returns_text():
@@ -33,8 +33,12 @@ def test_anthropic_provider_complete_returns_text():
         mock_client.messages.create.return_value = mock_response
         mock_cls.return_value = mock_client
 
-        provider = AnthropicProvider(api_key="fake-key", model_name="claude-sonnet-5",
-                                      max_tokens=100, temperature=0.0)
+        provider = AnthropicProvider(
+            api_key="fake-key",
+            model_name="claude-sonnet-5",
+            max_tokens=100,
+            temperature=0.0,
+        )
         result = provider.complete("system prompt", "user prompt")
 
     assert result == "Réponse générée"
@@ -46,8 +50,12 @@ def test_anthropic_provider_wraps_api_errors():
         mock_client.messages.create.side_effect = RuntimeError("panne API simulée")
         mock_cls.return_value = mock_client
 
-        provider = AnthropicProvider(api_key="fake-key", model_name="claude-sonnet-5",
-                                      max_tokens=100, temperature=0.0)
+        provider = AnthropicProvider(
+            api_key="fake-key",
+            model_name="claude-sonnet-5",
+            max_tokens=100,
+            temperature=0.0,
+        )
         with pytest.raises(LLMProviderError, match="Anthropic"):
             provider.complete("system", "user")
 
@@ -56,6 +64,7 @@ def test_anthropic_provider_wraps_api_errors():
 # OllamaProvider
 # ---------------------------------------------------------------
 
+
 def test_ollama_provider_complete_returns_text():
     with patch("requests.post") as mock_post:
         mock_response = MagicMock()
@@ -63,8 +72,12 @@ def test_ollama_provider_complete_returns_text():
         mock_response.raise_for_status.return_value = None
         mock_post.return_value = mock_response
 
-        provider = OllamaProvider(base_url="http://localhost:11434", model_name="qwen2.5:3b",
-                                   max_tokens=100, temperature=0.0)
+        provider = OllamaProvider(
+            base_url="http://localhost:11434",
+            model_name="qwen2.5:3b",
+            max_tokens=100,
+            temperature=0.0,
+        )
         result = provider.complete("system prompt", "user prompt")
 
     assert result == "Réponse locale"
@@ -79,8 +92,12 @@ def test_ollama_provider_connection_error_is_explicit():
     import requests as real_requests
 
     with patch("requests.post", side_effect=real_requests.exceptions.ConnectionError("refused")):
-        provider = OllamaProvider(base_url="http://localhost:11434", model_name="qwen2.5:3b",
-                                   max_tokens=100, temperature=0.0)
+        provider = OllamaProvider(
+            base_url="http://localhost:11434",
+            model_name="qwen2.5:3b",
+            max_tokens=100,
+            temperature=0.0,
+        )
         with pytest.raises(LLMProviderError, match="ollama serve"):
             provider.complete("system", "user")
 
@@ -92,8 +109,12 @@ def test_ollama_provider_malformed_response_raises_clear_error():
         mock_response.raise_for_status.return_value = None
         mock_post.return_value = mock_response
 
-        provider = OllamaProvider(base_url="http://localhost:11434", model_name="qwen2.5:3b",
-                                   max_tokens=100, temperature=0.0)
+        provider = OllamaProvider(
+            base_url="http://localhost:11434",
+            model_name="qwen2.5:3b",
+            max_tokens=100,
+            temperature=0.0,
+        )
         with pytest.raises(LLMProviderError, match="champ manquant"):
             provider.complete("system", "user")
 
@@ -101,6 +122,7 @@ def test_ollama_provider_malformed_response_raises_clear_error():
 # ---------------------------------------------------------------
 # Factory get_llm_provider() : le point d'entrée utilisé par generation.py
 # ---------------------------------------------------------------
+
 
 def test_factory_returns_anthropic_provider():
     fake_settings = MagicMock()
@@ -137,6 +159,7 @@ def test_factory_unknown_provider_raises():
 # ---------------------------------------------------------------
 # Ajouts : température optionnelle et timeout configurable
 # ---------------------------------------------------------------
+
 
 def test_anthropic_omits_temperature_when_none():
     """Certains modèles récents refusent le paramètre temperature :

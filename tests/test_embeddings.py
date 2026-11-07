@@ -10,16 +10,16 @@ librairies tierces (déjà testées par leurs propres mainteneurs).
 """
 
 import json
+
 import pytest
-from pathlib import Path
 
-from src.embeddings import load_chunks, ChunksValidationError
+from src.embeddings import ChunksValidationError, load_chunks
 from src.vector_store import ChromaVectorStore, VectorStoreError
-
 
 # ---------------------------------------------------------------
 # Tests de load_chunks() — validation du schéma d'entrée
 # ---------------------------------------------------------------
+
 
 def test_load_chunks_valid_file(tmp_path):
     """Un fichier bien formé doit être chargé sans erreur."""
@@ -66,6 +66,7 @@ def test_load_chunks_missing_required_field(tmp_path):
 # ---------------------------------------------------------------
 # Tests de ChromaVectorStore — validation défensive
 # ---------------------------------------------------------------
+
 
 def test_vector_store_add_mismatched_lengths(tmp_path):
     """add() doit rejeter des listes de longueurs incohérentes plutôt

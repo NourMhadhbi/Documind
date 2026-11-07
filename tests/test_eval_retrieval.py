@@ -3,15 +3,24 @@ import json
 import pytest
 
 from benchmarks.eval_retrieval import (
-    load_questions, mean_distance, run_retrieval, tracking_metrics,
+    load_questions,
+    mean_distance,
+    run_retrieval,
+    tracking_metrics,
 )
-from benchmarks.metrics import aggregate_retrieval
 from benchmarks.io_utils import read_json, write_json_atomic
+from benchmarks.metrics import aggregate_retrieval
 
 
 def _q(id_, lang, expected, trap=False):
-    return {"id": id_, "topic": "t", "lang": lang, "question": f"Q {id_}",
-            "expected_sources": expected, "trap": trap}
+    return {
+        "id": id_,
+        "topic": "t",
+        "lang": lang,
+        "question": f"Q {id_}",
+        "expected_sources": expected,
+        "trap": trap,
+    }
 
 
 def _fake_retrieve(mapping):
@@ -20,18 +29,23 @@ def _fake_retrieve(mapping):
         if isinstance(value, Exception):
             raise value
         return [{"source": s, "score": d, "text": "t"} for s, d in value][:k]
+
     return retrieve
 
 
 def test_run_retrieval_computes_rank_and_top_distance():
     questions = [_q("a", "en", ["x.md"])]
-    rows = run_retrieval(questions, _fake_retrieve({"Q a": [("y.md", 0.4), ("x.md", 0.6)]}), top_k=5)
+    rows = run_retrieval(
+        questions, _fake_retrieve({"Q a": [("y.md", 0.4), ("x.md", 0.6)]}), top_k=5
+    )
     assert rows[0]["rank"] == 2 and rows[0]["top1_distance"] == 0.4
     assert rows[0]["sources"] == ["y.md", "x.md"] and rows[0]["error"] is None
 
 
 def test_run_retrieval_leaves_rank_empty_for_traps_but_keeps_distance():
-    rows = run_retrieval([_q("t", "fr", [], trap=True)], _fake_retrieve({"Q t": [("a.md", 0.9)]}), 5)
+    rows = run_retrieval(
+        [_q("t", "fr", [], trap=True)], _fake_retrieve({"Q t": [("a.md", 0.9)]}), 5
+    )
     assert rows[0]["rank"] is None and rows[0]["top1_distance"] == 0.9
 
 
@@ -44,7 +58,8 @@ def test_run_retrieval_records_errors_and_continues():
 
 def test_summary_and_tracking_metrics():
     rows = [
-        {"lang": "en", "rank": 1, "trap": False}, {"lang": "en", "rank": None, "trap": False},
+        {"lang": "en", "rank": 1, "trap": False},
+        {"lang": "en", "rank": None, "trap": False},
         {"lang": "ar", "rank": 2, "trap": False},
     ]
     summary = aggregate_retrieval(rows, 5)
@@ -55,8 +70,12 @@ def test_summary_and_tracking_metrics():
 
 
 def test_mean_distance_separates_traps_and_normal_questions():
-    rows = [{"trap": False, "top1_distance": 0.2}, {"trap": False, "top1_distance": 0.4},
-            {"trap": True, "top1_distance": 0.9}, {"trap": True, "top1_distance": None}]
+    rows = [
+        {"trap": False, "top1_distance": 0.2},
+        {"trap": False, "top1_distance": 0.4},
+        {"trap": True, "top1_distance": 0.9},
+        {"trap": True, "top1_distance": None},
+    ]
     assert mean_distance(rows, False) == pytest.approx(0.3)
     assert mean_distance(rows, True) == 0.9
 

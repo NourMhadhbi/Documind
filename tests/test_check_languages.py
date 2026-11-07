@@ -1,4 +1,5 @@
 """Tests des fonctions pures de check_languages (aucun modèle chargé)."""
+
 from benchmarks.check_languages import rank_of_expected, recall_by_language
 
 
@@ -30,6 +31,7 @@ def test_questions_are_balanced_across_languages():
     """Chaque langue doit avoir exactement les mêmes sujets, sinon la
     comparaison entre langues serait faussée."""
     from collections import Counter
+
     from benchmarks.check_languages import QUESTIONS
 
     counts = Counter(q["lang"] for q in QUESTIONS)

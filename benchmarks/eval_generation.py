@@ -32,22 +32,36 @@ DEFAULT_GOLDEN = "tests/golden_qa.json"
 RESULTS_DIR = "benchmarks/results"
 
 
-def select_questions(questions: List[Dict], limit: Optional[int] = None, langs: Optional[List[str]] = None,
-                     ids: Optional[List[str]] = None, include_traps: bool = True) -> List[Dict]:
-    selected = [q for q in questions
-                if (not langs or q["lang"] in langs)
-                and (not ids or q["id"] in ids)
-                and (include_traps or not q["trap"])]
+def select_questions(
+    questions: List[Dict],
+    limit: Optional[int] = None,
+    langs: Optional[List[str]] = None,
+    ids: Optional[List[str]] = None,
+    include_traps: bool = True,
+) -> List[Dict]:
+    selected = [
+        q
+        for q in questions
+        if (not langs or q["lang"] in langs)
+        and (not ids or q["id"] in ids)
+        and (include_traps or not q["trap"])
+    ]
     return selected[:limit] if limit else selected
 
 
 def evaluate_one(question: Dict, generate_fn: Callable[[str], Dict]) -> Dict:
     """Génère la réponse à une question et calcule ses indicateurs. Une panne est
     enregistrée dans la ligne (champ `error`), jamais propagée."""
-    row = {"id": question["id"], "lang": question["lang"], "topic": question["topic"],
-           "trap": question["trap"], "question": question["question"],
-           "reference": question.get("reference"), "expected_sources": question["expected_sources"],
-           "error": None}
+    row = {
+        "id": question["id"],
+        "lang": question["lang"],
+        "topic": question["topic"],
+        "trap": question["trap"],
+        "question": question["question"],
+        "reference": question.get("reference"),
+        "expected_sources": question["expected_sources"],
+        "error": None,
+    }
     try:
         result = generate_fn(question["question"])
     except Exception as exc:  # noqa: BLE001 : on veut continuer l'évaluation
@@ -56,20 +70,24 @@ def evaluate_one(question: Dict, generate_fn: Callable[[str], Dict]) -> Dict:
 
     answer = result["answer"]
     sources = result.get("sources", [])
-    row.update({
-        "answer": answer,
-        "sources": sources,
-        "contexts": result.get("contexts", []),
-        "refused": bool(result.get("refused")) or looks_like_refusal(answer),
-        "refusal_reason": result.get("refusal_reason"),
-        "latency_seconds": result.get("latency_seconds", 0.0),
-        "min_distance": result.get("min_distance"),
-        "llm_provider": result.get("llm_provider"),
-        "llm_model": result.get("llm_model"),
-        "language_ok": answer_language_matches(answer, question["lang"]),
-        "source_ok": None if question["trap"] else bool(set(question["expected_sources"]) & set(sources)),
-        "invalid_citations": invalid_citations(answer, sources),
-    })
+    row.update(
+        {
+            "answer": answer,
+            "sources": sources,
+            "contexts": result.get("contexts", []),
+            "refused": bool(result.get("refused")) or looks_like_refusal(answer),
+            "refusal_reason": result.get("refusal_reason"),
+            "latency_seconds": result.get("latency_seconds", 0.0),
+            "min_distance": result.get("min_distance"),
+            "llm_provider": result.get("llm_provider"),
+            "llm_model": result.get("llm_model"),
+            "language_ok": answer_language_matches(answer, question["lang"]),
+            "source_ok": None
+            if question["trap"]
+            else bool(set(question["expected_sources"]) & set(sources)),
+            "invalid_citations": invalid_citations(answer, sources),
+        }
+    )
     return row
 
 
@@ -97,15 +115,24 @@ def summarize(rows: List[Dict]) -> Dict[str, Dict]:
             "source_ok_rate": _rate([r["source_ok"] for r in normal]),
             "trap_refusal_rate": _rate([r["refused"] for r in traps]),
             "wrong_refusal_rate": _rate([r["refused"] for r in normal]),
-            "invalid_citation_rate": (sum(1 for r in answered if r["invalid_citations"]) / len(answered)
-                                      if answered else None),
+            "invalid_citation_rate": (
+                sum(1 for r in answered if r["invalid_citations"]) / len(answered)
+                if answered
+                else None
+            ),
             "avg_latency_s": sum(latencies) / len(latencies) if latencies else None,
         }
     return summary
 
 
-def run_evaluation(questions: List[Dict], generate_fn: Callable[[str], Dict], output_path: str,
-                   meta: Dict, resume: bool = False, progress: Callable[[str], None] = print) -> List[Dict]:
+def run_evaluation(
+    questions: List[Dict],
+    generate_fn: Callable[[str], Dict],
+    output_path: str,
+    meta: Dict,
+    resume: bool = False,
+    progress: Callable[[str], None] = print,
+) -> List[Dict]:
     done: Dict[str, Dict] = {}
     if resume and Path(output_path).exists():
         done = {r["id"]: r for r in read_json(output_path).get("rows", []) if not r.get("error")}
@@ -120,8 +147,14 @@ def run_evaluation(questions: List[Dict], generate_fn: Callable[[str], Dict], ou
         started = time.perf_counter()
         row = evaluate_one(question, generate_fn)
         rows.append(row)
-        status = f"erreur : {row['error']}" if row["error"] else ("refus" if row["refused"] else "répondu")
-        progress(f"[{index}/{total}] {question['id']} : {status} ({time.perf_counter() - started:.0f} s)")
+        status = (
+            f"erreur : {row['error']}"
+            if row["error"]
+            else ("refus" if row["refused"] else "répondu")
+        )
+        progress(
+            f"[{index}/{total}] {question['id']} : {status} ({time.perf_counter() - started:.0f} s)"
+        )
         write_json_atomic(output_path, {"meta": meta, "rows": rows, "summary": summarize(rows)})
 
     write_json_atomic(output_path, {"meta": meta, "rows": rows, "summary": summarize(rows)})
@@ -129,9 +162,15 @@ def run_evaluation(questions: List[Dict], generate_fn: Callable[[str], Dict], ou
 
 
 def tracking_metrics(summary: Dict[str, Dict]) -> Dict[str, Optional[float]]:
-    names = {"language_ok_rate": "language_ok", "source_ok_rate": "source_ok",
-             "trap_refusal_rate": "trap_refusal", "wrong_refusal_rate": "wrong_refusal",
-             "invalid_citation_rate": "invalid_citation", "avg_latency_s": "latency_s", "n_errors": "n_errors"}
+    names = {
+        "language_ok_rate": "language_ok",
+        "source_ok_rate": "source_ok",
+        "trap_refusal_rate": "trap_refusal",
+        "wrong_refusal_rate": "wrong_refusal",
+        "invalid_citation_rate": "invalid_citation",
+        "avg_latency_s": "latency_s",
+        "n_errors": "n_errors",
+    }
     metrics: Dict[str, Optional[float]] = {}
     for group, values in summary.items():
         for key, label in names.items():
@@ -147,11 +186,15 @@ def _fmt(value: Optional[float], percent: bool = True) -> str:
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--golden", default=DEFAULT_GOLDEN)
     parser.add_argument("--run-name", default="default")
     parser.add_argument("--limit", type=int, default=None, help="nombre maximal de questions")
-    parser.add_argument("--lang", default=None, help="langues séparées par des virgules (ex: en,fr)")
+    parser.add_argument(
+        "--lang", default=None, help="langues séparées par des virgules (ex: en,fr)"
+    )
     parser.add_argument("--ids", default=None, help="identifiants séparés par des virgules")
     parser.add_argument("--no-traps", action="store_true")
     parser.add_argument("--resume", action="store_true")
@@ -163,40 +206,63 @@ def main() -> None:
     from src.generation import generate_answer
 
     questions = select_questions(
-        load_questions(args.golden), args.limit,
+        load_questions(args.golden),
+        args.limit,
         args.lang.split(",") if args.lang else None,
         args.ids.split(",") if args.ids else None,
-        include_traps=not args.no_traps)
+        include_traps=not args.no_traps,
+    )
     if not questions:
         print("Aucune question sélectionnée.")
         return
 
     meta = {
-        "run_name": args.run_name, "golden": args.golden, "n_questions": len(questions),
+        "run_name": args.run_name,
+        "golden": args.golden,
+        "n_questions": len(questions),
         "llm_provider": settings.llm_provider,
-        "llm_model": settings.ollama_model_name if settings.llm_provider == "ollama" else settings.llm_model_name,
-        "embedding_model": settings.embedding_model_name, "index_path": settings.index_path,
-        "max_distance": settings.max_distance, "retrieval_top_k": settings.retrieval_top_k,
+        "llm_model": settings.ollama_model_name
+        if settings.llm_provider == "ollama"
+        else settings.llm_model_name,
+        "embedding_model": settings.embedding_model_name,
+        "index_path": settings.index_path,
+        "max_distance": settings.max_distance,
+        "retrieval_top_k": settings.retrieval_top_k,
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     output = args.output or f"{RESULTS_DIR}/generation_{args.run_name}.json"
-    print(f"{len(questions)} questions | {meta['llm_provider']}:{meta['llm_model']} | garde-fou : {meta['max_distance']}")
+    print(
+        f"{len(questions)} questions | {meta['llm_provider']}:{meta['llm_model']} | garde-fou : {meta['max_distance']}"
+    )
     rows = run_evaluation(questions, generate_answer, output, meta, resume=args.resume)
     summary = summarize(rows)
 
-    print(f"\n{'Groupe':<9}{'n':<4}{'Langue':<8}{'Source':<8}{'Pièges':<8}{'Refus':<7}{'Cit.inv.':<9}{'Latence':<8}{'Err'}")
+    print(
+        f"\n{'Groupe':<9}{'n':<4}{'Langue':<8}{'Source':<8}{'Pièges':<8}{'Refus':<7}{'Cit.inv.':<9}{'Latence':<8}{'Err'}"
+    )
     for group in sorted(summary, key=lambda name: (name == "overall", name)):
         v = summary[group]
-        print(f"{group:<9}{v['n']:<4}{_fmt(v['language_ok_rate']):<8}{_fmt(v['source_ok_rate']):<8}"
-              f"{_fmt(v['trap_refusal_rate']):<8}{_fmt(v['wrong_refusal_rate']):<7}"
-              f"{_fmt(v['invalid_citation_rate']):<9}{_fmt(v['avg_latency_s'], False) + ' s':<8}{v['n_errors']}")
-    print("\nLangue = réponse dans la langue de la question | Source = bonne page parmi les sources fournies |"
-          "\nPièges = refus des questions hors corpus | Refus = refus à tort | Cit.inv. = citations de fichiers inventées")
+        print(
+            f"{group:<9}{v['n']:<4}{_fmt(v['language_ok_rate']):<8}{_fmt(v['source_ok_rate']):<8}"
+            f"{_fmt(v['trap_refusal_rate']):<8}{_fmt(v['wrong_refusal_rate']):<7}"
+            f"{_fmt(v['invalid_citation_rate']):<9}{_fmt(v['avg_latency_s'], False) + ' s':<8}{v['n_errors']}"
+        )
+    print(
+        "\nLangue = réponse dans la langue de la question | Source = bonne page parmi les sources fournies |"
+        "\nPièges = refus des questions hors corpus | Refus = refus à tort | Cit.inv. = citations de fichiers inventées"
+    )
     print(f"Résultats : {output}")
 
     if args.mlflow:
         from benchmarks.tracking import log_run
-        log_run("generation_eval", args.run_name, meta, tracking_metrics(summary), artifacts=[output])
+
+        log_run(
+            "generation_eval",
+            args.run_name,
+            meta,
+            tracking_metrics(summary),
+            artifacts=[output],
+        )
         print("Run journalisé dans MLflow.")
 
 

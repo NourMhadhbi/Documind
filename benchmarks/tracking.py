@@ -25,6 +25,7 @@ def configure_mlflow():
     """Retourne le module mlflow configuré, ou lève une RuntimeError explicite."""
     try:
         from dotenv import load_dotenv
+
         load_dotenv()
     except ImportError:
         pass
@@ -40,8 +41,14 @@ def configure_mlflow():
     return mlflow
 
 
-def log_run(experiment: str, run_name: str, params: Dict, metrics: Dict,
-            artifacts: Optional[Iterable[str]] = None, mlflow_module=None) -> None:
+def log_run(
+    experiment: str,
+    run_name: str,
+    params: Dict,
+    metrics: Dict,
+    artifacts: Optional[Iterable[str]] = None,
+    mlflow_module=None,
+) -> None:
     """Enregistre une exécution : paramètres, métriques (les valeurs None ou non finies
     sont ignorées) et fichiers joints."""
     # MLflow affiche des emojis : sous Windows (cp1252) cela fait planter l'impression.

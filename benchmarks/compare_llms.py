@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 from config import settings
-from src.generation import generate_answer, GenerationError
+from src.generation import GenerationError, generate_answer
 
 logger = logging.getLogger(__name__)
 
@@ -33,25 +33,51 @@ logger = logging.getLogger(__name__)
 # refuser de répondre. C'est le test qui distingue le mieux un petit
 # modèle (tendance à inventer) d'un grand modèle (respecte la règle 2).
 QUESTIONS: List[Dict] = [
-    {"query": "How do I create a POST route in FastAPI?",
-     "expected_sources": ["tutorial/first-steps.md", "tutorial/body.md"], "trap": False},
-    {"query": "How to declare path parameters?",
-     "expected_sources": ["tutorial/path-params.md"], "trap": False},
-    {"query": "How to validate request body with Pydantic?",
-     "expected_sources": ["tutorial/body.md"], "trap": False},
-    {"query": "What is dependency injection in FastAPI?",
-     "expected_sources": ["tutorial/dependencies/index.md"], "trap": False},
-    {"query": "How to return a custom HTTP status code?",
-     "expected_sources": ["tutorial/response-status-code.md"], "trap": False},
-    {"query": "What is the recipe for a chocolate cake?",
-     "expected_sources": [], "trap": True},
+    {
+        "query": "How do I create a POST route in FastAPI?",
+        "expected_sources": ["tutorial/first-steps.md", "tutorial/body.md"],
+        "trap": False,
+    },
+    {
+        "query": "How to declare path parameters?",
+        "expected_sources": ["tutorial/path-params.md"],
+        "trap": False,
+    },
+    {
+        "query": "How to validate request body with Pydantic?",
+        "expected_sources": ["tutorial/body.md"],
+        "trap": False,
+    },
+    {
+        "query": "What is dependency injection in FastAPI?",
+        "expected_sources": ["tutorial/dependencies/index.md"],
+        "trap": False,
+    },
+    {
+        "query": "How to return a custom HTTP status code?",
+        "expected_sources": ["tutorial/response-status-code.md"],
+        "trap": False,
+    },
+    {
+        "query": "What is the recipe for a chocolate cake?",
+        "expected_sources": [],
+        "trap": True,
+    },
 ]
 
 # Heuristique volontairement simple et transparente : à vérifier à la main.
 REFUSAL_MARKERS = [
-    "ne sais pas", "pas d'information", "n'ai pas trouvé", "ne contient pas",
-    "pas mentionn", "aucune information", "don't know", "not contain",
-    "no information", "cannot answer", "impossible de répondre",
+    "ne sais pas",
+    "pas d'information",
+    "n'ai pas trouvé",
+    "ne contient pas",
+    "pas mentionn",
+    "aucune information",
+    "don't know",
+    "not contain",
+    "no information",
+    "cannot answer",
+    "impossible de répondre",
 ]
 
 
@@ -85,7 +111,9 @@ def summarize(rows: List[Dict]) -> Dict:
         "questions_ok": len([r for r in rows if not r.get("error")]),
         "errors": len([r for r in rows if r.get("error")]),
         "avg_latency_s": round(sum(latencies) / len(latencies), 2) if latencies else None,
-        "citation_rate": round(sum(r["cites_expected"] for r in normal) / len(normal), 2) if normal else None,
+        "citation_rate": round(sum(r["cites_expected"] for r in normal) / len(normal), 2)
+        if normal
+        else None,
         "refuses_trap": (sum(r["refused"] for r in traps) / len(traps)) if traps else None,
     }
 
@@ -106,7 +134,9 @@ def run_candidate(provider: str, model: str) -> List[Dict]:
                 answer=result["answer"],
                 sources=result["sources"],
                 latency_seconds=result["latency_seconds"],
-                cites_expected=cites_expected_source(result["answer"], result["sources"], q["expected_sources"]),
+                cites_expected=cites_expected_source(
+                    result["answer"], result["sources"], q["expected_sources"]
+                ),
                 refused=looks_like_refusal(result["answer"]),
             )
         except GenerationError as exc:
@@ -118,8 +148,15 @@ def run_candidate(provider: str, model: str) -> List[Dict]:
 
 def main() -> None:
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s | %(message)s")
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--candidates", nargs="+", required=True, help="ex: anthropic:claude-sonnet-5 ollama:qwen2.5:3b")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--candidates",
+        nargs="+",
+        required=True,
+        help="ex: anthropic:claude-sonnet-5 ollama:qwen2.5:3b",
+    )
     parser.add_argument("--output", default="benchmarks/results/llm_comparison.json")
     args = parser.parse_args()
 
@@ -141,9 +178,13 @@ def main() -> None:
     print("-" * 78)
     for spec, data in all_results.items():
         s = data["summary"]
-        print(f"{spec:<30}{str(s['avg_latency_s']):<14}{str(s['citation_rate']):<12}"
-              f"{str(s['refuses_trap']):<14}{s['errors']:<8}")
-    print("\nLis aussi les réponses complètes dans le JSON : les indicateurs ci-dessus sont des heuristiques.")
+        print(
+            f"{spec:<30}{str(s['avg_latency_s']):<14}{str(s['citation_rate']):<12}"
+            f"{str(s['refuses_trap']):<14}{s['errors']:<8}"
+        )
+    print(
+        "\nLis aussi les réponses complètes dans le JSON : les indicateurs ci-dessus sont des heuristiques."
+    )
 
 
 if __name__ == "__main__":

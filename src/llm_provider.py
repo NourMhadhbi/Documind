@@ -18,6 +18,7 @@ class LLMProviderError(Exception):
     """Erreur métier du fournisseur LLM (distincte des exceptions
     internes de chaque SDK/API, pour ne pas fuiter de détail
     d'implémentation vers generation.py)."""
+
     pass
 
 
@@ -34,9 +35,14 @@ class LLMProvider(ABC):
 class AnthropicProvider(LLMProvider):
     """Fournisseur cloud : API Anthropic (Claude)."""
 
-    def __init__(self, api_key: str, model_name: str, max_tokens: int,
-                 temperature: Optional[float]):
-        import anthropic  
+    def __init__(
+        self,
+        api_key: str,
+        model_name: str,
+        max_tokens: int,
+        temperature: Optional[float],
+    ):
+        import anthropic
 
         if not api_key:
             raise LLMProviderError("anthropic_api_key manquant dans la config")
@@ -69,8 +75,14 @@ class OllamaProvider(LLMProvider):
     Llama 3.2 3B), via son API HTTP locale -- pas de dépendance SDK
     supplémentaire, juste `requests`."""
 
-    def __init__(self, base_url: str, model_name: str, max_tokens: int,
-                 temperature: Optional[float], timeout_seconds: int = 360):
+    def __init__(
+        self,
+        base_url: str,
+        model_name: str,
+        max_tokens: int,
+        temperature: Optional[float],
+        timeout_seconds: int = 360,
+    ):
         import requests  # import local
 
         self._requests = requests

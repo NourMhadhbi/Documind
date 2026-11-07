@@ -44,13 +44,31 @@ def aggregate_retrieval(rows: List[Dict], k: int) -> Dict:
 # Marqueurs de refus (heuristique transparente, à compléter si besoin).
 _REFUSAL_MARKERS = (
     # français
-    "ne sais pas", "n'ai pas trouvé", "pas trouvé", "pas d'information", "aucune information",
-    "ne contient pas", "pas mentionn", "impossible de répondre",
+    "ne sais pas",
+    "n'ai pas trouvé",
+    "pas trouvé",
+    "pas d'information",
+    "aucune information",
+    "ne contient pas",
+    "pas mentionn",
+    "impossible de répondre",
     # anglais
-    "don't know", "do not know", "could not find", "couldn't find", "no information",
-    "not mentioned", "does not contain", "cannot answer", "can't answer",
+    "don't know",
+    "do not know",
+    "could not find",
+    "couldn't find",
+    "no information",
+    "not mentioned",
+    "does not contain",
+    "cannot answer",
+    "can't answer",
     # arabe
-    "لم أجد", "لا أعرف", "لا توجد معلومات", "غير مذكور", "لا يحتوي", "لا أستطيع",
+    "لم أجد",
+    "لا أعرف",
+    "لا توجد معلومات",
+    "غير مذكور",
+    "لا يحتوي",
+    "لا أستطيع",
 )
 
 
