@@ -1,5 +1,5 @@
 """
-API REST de DocuMind — Sprint 6.
+API REST de DocuMind — Sprint 6 (métriques Prometheus : Sprint 9).
 
 Expose le pipeline RAG existant :
 retrieval -> garde-fou de pertinence -> génération LLM.
@@ -11,8 +11,10 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
+from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel, Field
 
+from api.metrics import RAG_GENERATION_SECONDS, RAG_MIN_DISTANCE, RAG_REQUESTS
 from config import settings
 from src.generation import GenerationError, generate_answer
 
@@ -26,6 +28,9 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
+
+# Métriques d'infrastructure (latence, codes HTTP) exposées sur /metrics.
+Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 GENERATION_TIMEOUT = 180
 
@@ -197,6 +202,16 @@ async def chat(request: ChatRequest) -> ChatResponse:
             status_code=500,
             detail="Une erreur interne est survenue.",
         ) from exc
+
+    # Métriques métier : une requête réussie (réponse ou refus du garde-fou).
+    # Les erreurs 503/504/500 sont comptées par l'Instrumentator.
+    RAG_REQUESTS.labels(
+        language=result.get("language") or "unknown",
+        refused=str(result["refused"]).lower(),
+    ).inc()
+    if result.get("min_distance") is not None:
+        RAG_MIN_DISTANCE.observe(result["min_distance"])
+    RAG_GENERATION_SECONDS.observe(result.get("latency_seconds", 0.0))
 
     # generate_answer() renvoie déjà les sources et le statut de refus.
     # On conserve directement ces informations, sans inventer de sources.
