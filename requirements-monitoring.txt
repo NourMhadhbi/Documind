@@ -1,0 +1,3 @@
+# Outils locaux de monitoring (pas dans l image de l API).
+# Version testee : evidently 0.7.23 (API Report([...]).run(...)).
+evidently==0.7.23

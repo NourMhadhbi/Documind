@@ -1,0 +1,33 @@
+# Règles d'alerte DocuMind (Sprint 9).
+# Les seuils ci-dessous sont des POINTS DE DÉPART : remplace-les par des valeurs
+# issues de tes propres mesures (dashboard + logs) et justifie-les dans l'ADR.
+groups:
+  - name: documind
+    rules:
+      - alert: HighErrorRate
+        # Vérifie la valeur du label status sur /metrics (ici regroupée en "5xx").
+        expr: |
+          sum(rate(http_requests_total{status="5xx"}[5m]))
+            / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Plus de 5 % d'erreurs 5xx pendant 5 minutes (seuil à calibrer)"
+
+      - alert: HighRefusalRate
+        expr: |
+          sum(rate(documind_requests_total{refused="true"}[15m]))
+            / sum(rate(documind_requests_total[15m])) > 0.5
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "Plus de 50 % de refus pendant 15 minutes (seuil à calibrer sur ta mesure de base)"
+
+      - alert: HighGenerationLatencyP95
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(documind_generation_seconds_bucket[10m])) by (le)) > 60
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Latence p95 de génération au-dessus de 60 s (seuil à calibrer sur ton benchmark Ollama)"
