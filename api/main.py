@@ -1,5 +1,5 @@
 """
-API REST de DocuMind — Sprint 6 (métriques Prometheus : Sprint 9).
+API REST de DocuMind — Sprint 6 (métriques et journal : Sprint 9).
 
 Expose le pipeline RAG existant :
 retrieval -> garde-fou de pertinence -> génération LLM.
@@ -15,6 +15,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import BaseModel, Field
 
 from api.metrics import RAG_GENERATION_SECONDS, RAG_MIN_DISTANCE, RAG_REQUESTS
+from api.request_log import log_request
 from config import settings
 from src.generation import GenerationError, generate_answer
 
@@ -212,6 +213,9 @@ async def chat(request: ChatRequest) -> ChatResponse:
     if result.get("min_distance") is not None:
         RAG_MIN_DISTANCE.observe(result["min_distance"])
     RAG_GENERATION_SECONDS.observe(result.get("latency_seconds", 0.0))
+
+    # Journal JSONL pour le rapport de drift (sans le texte de la question).
+    log_request(question, result)
 
     # generate_answer() renvoie déjà les sources et le statut de refus.
     # On conserve directement ces informations, sans inventer de sources.

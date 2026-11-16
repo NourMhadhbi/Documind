@@ -1,0 +1,12 @@
+{"ts": "2026-11-14T04:22:58+00:00", "language": "fr", "min_distance": 1.4981119632720947, "refused": true, "refusal_reason": "low_relevance", "latency_seconds": 0.0, "n_sources": 0, "question_length": 41}
+{"ts": "2026-11-14T04:23:00+00:00", "language": "en", "min_distance": 1.6634502410888672, "refused": true, "refusal_reason": "low_relevance", "latency_seconds": 0.0, "n_sources": 0, "question_length": 39}
+{"ts": "2026-11-14T04:23:01+00:00", "language": "ar", "min_distance": 1.155185580253601, "refused": true, "refusal_reason": "low_relevance", "latency_seconds": 0.0, "n_sources": 0, "question_length": 36}
+{"ts": "2026-11-14T04:23:02+00:00", "language": "fr", "min_distance": 1.4316816329956055, "refused": true, "refusal_reason": "low_relevance", "latency_seconds": 0.0, "n_sources": 0, "question_length": 44}
+{"ts": "2026-11-14T04:49:14+00:00", "language": "en", "min_distance": 0.8389642238616943, "refused": false, "refusal_reason": null, "latency_seconds": 156.77, "n_sources": 4, "question_length": 40}
+{"ts": "2026-11-14T04:49:15+00:00", "language": "fr", "min_distance": 1.4981119632720947, "refused": true, "refusal_reason": "low_relevance", "latency_seconds": 0.0, "n_sources": 0, "question_length": 41}
+{"ts": "2026-11-14T04:57:08+00:00", "language": "en", "min_distance": 0.7771785259246826, "refused": false, "refusal_reason": null, "latency_seconds": 111.013, "n_sources": 3, "question_length": 33}
+{"ts": "2026-11-14T13:02:36+00:00", "language": "en", "min_distance": 0.8389642238616943, "refused": false, "refusal_reason": null, "latency_seconds": 136.626, "n_sources": 4, "question_length": 40}
+{"ts": "2026-11-14T13:02:37+00:00", "language": "fr", "min_distance": 1.4981119632720947, "refused": true, "refusal_reason": "low_relevance", "latency_seconds": 0.0, "n_sources": 0, "question_length": 41}
+{"ts": "2026-11-14T13:04:46+00:00", "language": "en", "min_distance": 0.5488864779472351, "refused": false, "refusal_reason": null, "latency_seconds": 128.757, "n_sources": 4, "question_length": 47}
+{"ts": "2026-11-14T13:06:39+00:00", "language": "en", "min_distance": 0.6137821078300476, "refused": false, "refusal_reason": null, "latency_seconds": 112.004, "n_sources": 3, "question_length": 29}
+{"ts": "2026-11-14T13:07:40+00:00", "language": "en", "min_distance": 0.7771785259246826, "refused": false, "refusal_reason": null, "latency_seconds": 60.712, "n_sources": 3, "question_length": 33}
